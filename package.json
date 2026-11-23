@@ -1,0 +1,17 @@
+{
+  "name": "dukan-sahayak",
+  "version": "2.0.0",
+  "description": "Smart Dukan Purchasing, Wholesale-Retail Margins and Inventory Tool for Indian Retailers",
+  "author": "Dukan Assistant",
+  "license": "MIT",
+  "scripts": {
+    "start": "python main.py",
+    "desktop": "python desktop_app.py",
+    "build:exe": "pyinstaller DukanSahayak.spec"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+venv/
+ENV/
+
+# PyInstaller & Build artifacts
+build/
+dist/
+*.spec
+
+# Database backups (keep main dukan_data.db in repo as initial seed)
+data/backups/
+*.log
+
+# OS & IDE
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
