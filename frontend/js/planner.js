@@ -12,7 +12,7 @@ const PlannerModule = {
     if (!container) return;
 
     let html = `
-      <button onclick="PlannerModule.setCategory('all')" class="category-pill whitespace-nowrap px-3 py-1 rounded-full font-medium transition ${Store.selectedPlannerCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+      <button onclick="PlannerModule.setCategory('all')" class="cat-pill ${Store.selectedPlannerCategory === 'all' ? 'active' : ''}">
         सभी (All)
       </button>
     `;
@@ -20,7 +20,7 @@ const PlannerModule = {
     Store.categories.forEach(cat => {
       const isSel = Store.selectedPlannerCategory === cat;
       html += `
-        <button onclick="PlannerModule.setCategory('${cat}')" class="category-pill whitespace-nowrap px-3 py-1 rounded-full font-medium transition ${isSel ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+        <button onclick="PlannerModule.setCategory('${cat}')" class="cat-pill ${isSel ? 'active' : ''}">
           ${cat}
         </button>
       `;
@@ -56,6 +56,7 @@ const PlannerModule = {
 
   renderTable() {
     const tbody = document.getElementById('plannerTableBody');
+    const cardsContainer = document.getElementById('plannerMobileCards');
     const emptyState = document.getElementById('plannerEmptyState');
     const searchTxt = (document.getElementById('plannerSearch')?.value || '').toLowerCase().trim();
 
@@ -76,12 +77,15 @@ const PlannerModule = {
 
     if (filtered.length === 0) {
       tbody.innerHTML = '';
+      if (cardsContainer) cardsContainer.innerHTML = '';
       emptyState?.classList.remove('hidden');
       return;
     }
     emptyState?.classList.add('hidden');
 
     let rowsHtml = '';
+    let cardsHtml = '';
+
     filtered.forEach(p => {
       Store.initPlannerItem(p.id);
       const state = Store.plannerState[p.id];
@@ -91,60 +95,108 @@ const PlannerModule = {
       const subtotalS = (p.selling_price * qty).toFixed(2);
       const profit = (subtotalS - subtotalP).toFixed(2);
       const margin = p.selling_price > 0 ? ((p.profit_per_unit / p.selling_price) * 100).toFixed(1) : 0;
+      const subQty = p.sub_quantity || 1;
+      const subUnit = p.sub_unit || 'पीस';
+      const unitBuy = (p.unit_purchase_price || (p.purchase_price / subQty)).toFixed(2);
 
+      // 1. Desktop Table Row
       rowsHtml += `
-        <tr class="hover:bg-slate-50/80 transition ${isChecked ? 'bg-blue-50/40' : ''}">
-          <td class="py-3 px-4 text-center">
+        <tr class="${isChecked ? 'row-checked' : ''}">
+          <td style="text-align: center;">
             <input type="checkbox" 
               onchange="PlannerModule.toggleCheck(${p.id}, this.checked)" 
               ${isChecked ? 'checked' : ''} 
-              class="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+              style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
           </td>
-          <td class="py-3 px-4 font-medium text-slate-900">
-            <div class="flex items-center space-x-2">
-              <span class="font-bold">${p.name}</span>
-              <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-semibold">${p.unit || 'पेटी'}</span>
+          <td>
+            <div style="font-weight: 700; color: #0f172a; font-size: 14px;">
+              ${p.name}
+              <span class="badge badge-blue" style="margin-left: 6px;">${p.unit || 'पेटी'}</span>
             </div>
-            <div class="text-[11px] text-slate-500 mt-0.5 flex items-center space-x-2">
-              <span>1 पैक = <strong>${p.sub_quantity || 1} ${p.sub_unit || 'पीस'}</strong></span>
-              ${p.retail_selling_price ? `<span class="text-emerald-700">| फुटकर बिक्री: <strong>₹${p.retail_selling_price.toFixed(2)} /${p.sub_unit || 'पीस'}</strong></span>` : ''}
-            </div>
-          </td>
-          <td class="py-3 px-4 text-slate-600 text-xs">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-medium">${p.category || 'सामान्य'}</span>
-          </td>
-          <td class="py-3 px-4 text-right">
-            <div class="font-semibold text-blue-600">₹${p.purchase_price.toFixed(2)}</div>
-            <div class="text-[10px] text-slate-400">₹${(p.unit_purchase_price || (p.purchase_price / (p.sub_quantity || 1))).toFixed(2)} /${p.sub_unit || 'पीस'}</div>
-          </td>
-          <td class="py-3 px-4 text-right">
-            <div class="font-bold text-slate-800">₹${p.selling_price.toFixed(2)}</div>
-            <div class="text-[10px] text-emerald-600 font-medium">₹${(p.retail_selling_price || 0).toFixed(2)} /${p.sub_unit || 'पीस'}</div>
-          </td>
-          <td class="py-3 px-4 text-center">
-            <div class="inline-flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm">
-              <button onclick="PlannerModule.adjustQty(${p.id}, -1)" class="px-2 py-1 bg-slate-50 hover:bg-slate-200 text-slate-600 font-bold transition">
-                <i class="fa-solid fa-minus text-xs"></i>
-              </button>
-              <input type="number" min="0.1" step="any" value="${qty}" onchange="PlannerModule.setQty(${p.id}, this.value)" 
-                class="w-14 text-center text-xs font-bold text-slate-800 focus:outline-none py-1">
-              <button onclick="PlannerModule.adjustQty(${p.id}, 1)" class="px-2 py-1 bg-slate-50 hover:bg-slate-200 text-slate-600 font-bold transition">
-                <i class="fa-solid fa-plus text-xs"></i>
-              </button>
+            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+              1 पैक = <strong>${subQty} ${subUnit}</strong>
+              ${p.retail_selling_price ? ` | फुटकर बिक्री: <strong style="color: #059669;">₹${p.retail_selling_price.toFixed(2)} /${subUnit}</strong>` : ''}
             </div>
           </td>
-          <td class="py-3 px-4 text-right font-extrabold ${isChecked ? 'text-blue-700' : 'text-slate-500'}">
+          <td>
+            <span class="badge badge-slate">${p.category || 'सामान्य'}</span>
+          </td>
+          <td style="text-align: right;">
+            <div style="font-weight: 700; color: #2563eb;">₹${p.purchase_price.toFixed(2)}</div>
+            <div style="font-size: 10px; color: #94a3b8;">₹${unitBuy} /${subUnit}</div>
+          </td>
+          <td style="text-align: right;">
+            <div style="font-weight: 700; color: #0f172a;">₹${p.selling_price.toFixed(2)}</div>
+            <div style="font-size: 10px; color: #059669; font-weight: 600;">₹${(p.retail_selling_price || 0).toFixed(2)} /${subUnit}</div>
+          </td>
+          <td style="text-align: center;">
+            <div class="qty-stepper">
+              <button class="stepper-btn" onclick="PlannerModule.adjustQty(${p.id}, -1)">−</button>
+              <input type="number" min="0.1" step="any" value="${qty}" onchange="PlannerModule.setQty(${p.id}, this.value)" class="stepper-input">
+              <button class="stepper-btn" onclick="PlannerModule.adjustQty(${p.id}, 1)">+</button>
+            </div>
+          </td>
+          <td style="text-align: right; font-weight: 800; font-size: 14px; color: ${isChecked ? '#1d4ed8' : '#64748b'};">
             ₹${subtotalP}
           </td>
-          <td class="py-3 px-4 text-right">
-            <span class="font-bold text-emerald-600 text-xs">+₹${profit}</span>
-            <span class="text-[10px] bg-emerald-50 text-emerald-700 px-1 py-0.5 rounded ml-1 font-semibold">${margin}%</span>
+          <td style="text-align: right;">
+            <span style="font-weight: 800; color: #059669;">+₹${profit}</span>
+            <span class="badge badge-green" style="font-size: 10px; margin-left: 4px;">${margin}%</span>
           </td>
         </tr>
+      `;
+
+      // 2. Dedicated Mobile Card View
+      cardsHtml += `
+        <div class="mobile-item-card ${isChecked ? 'is-selected' : ''}">
+          <div class="mobile-card-top">
+            <label class="mobile-card-title-group">
+              <input type="checkbox" onchange="PlannerModule.toggleCheck(${p.id}, this.checked)" ${isChecked ? 'checked' : ''} class="mobile-check-box">
+              <div>
+                <span class="mobile-prod-name">${p.name}</span>
+                <span class="badge badge-blue" style="margin-left: 4px;">${p.unit || 'पेटी'}</span>
+              </div>
+            </label>
+            <span class="badge badge-slate">${p.category || 'सामान्य'}</span>
+          </div>
+
+          <div class="mobile-pack-info">
+            <span>📦 1 पैक = <strong>${subQty} ${subUnit}</strong></span>
+            ${p.retail_selling_price ? `<span style="color: #059669; font-weight: 700;">फुटकर: ₹${p.retail_selling_price.toFixed(2)}/${subUnit}</span>` : ''}
+          </div>
+
+          <div class="mobile-rates-grid">
+            <div class="rate-cell">
+              <span class="rate-lbl">थोक खरीद</span>
+              <span class="rate-val buy">₹${p.purchase_price.toFixed(2)}</span>
+            </div>
+            <div class="rate-cell">
+              <span class="rate-lbl">संभावित बिक्री</span>
+              <span class="rate-val sell">₹${p.selling_price.toFixed(2)}</span>
+            </div>
+            <div class="rate-cell">
+              <span class="rate-lbl">मुनाफा</span>
+              <span class="rate-val profit">+₹${profit} (${margin}%)</span>
+            </div>
+          </div>
+
+          <div class="mobile-card-bottom">
+            <div class="qty-stepper">
+              <button class="stepper-btn" onclick="PlannerModule.adjustQty(${p.id}, -1)">−</button>
+              <input type="number" min="0.1" step="any" value="${qty}" onchange="PlannerModule.setQty(${p.id}, this.value)" class="stepper-input">
+              <button class="stepper-btn" onclick="PlannerModule.adjustQty(${p.id}, 1)">+</button>
+            </div>
+            <div class="mobile-subtotal">
+              <div class="mobile-subtotal-lbl">कुल खरीद</div>
+              <div class="mobile-subtotal-val">₹${subtotalP}</div>
+            </div>
+          </div>
+        </div>
       `;
     });
 
     tbody.innerHTML = rowsHtml;
+    if (cardsContainer) cardsContainer.innerHTML = cardsHtml;
   },
 
   toggleCheck(id, checked) {
@@ -198,129 +250,122 @@ const PlannerModule = {
     });
 
     const totalProfit = totalSelling - totalPurchase;
-    const marginPercent = totalSelling > 0 ? ((totalProfit / totalSelling) * 100).toFixed(1) : 0;
 
-    const barCount = document.getElementById('barSelectedCount');
-    const barPurchase = document.getElementById('barPurchaseCost');
-    const barSelling = document.getElementById('barSellingValue');
-    const barProfit = document.getElementById('barProfit');
+    const countEl = document.getElementById('barSelectedCount');
+    const costEl = document.getElementById('barPurchaseCost');
+    const profitEl = document.getElementById('barProfit');
 
-    if (barCount) barCount.innerText = `${selectedCount} सामान`;
-    if (barPurchase) barPurchase.innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (barSelling) barSelling.innerText = `₹${totalSelling.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (barProfit) barProfit.innerHTML = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span class="text-xs font-semibold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full ml-1">${marginPercent}% मार्जिन</span>`;
-  },
-
-  async saveTrip() {
-    const tripDate = document.getElementById('tripDate')?.value;
-    const tripTitle = document.getElementById('tripTitle')?.value.trim() || 'दुकान खरीदारी';
-
-    if (!tripDate) {
-      App.showToast('कृपया खरीद तारीख चुनें', 'error');
-      return;
-    }
-
-    const checkedItems = [];
-    Store.products.forEach(p => {
-      const state = Store.plannerState[p.id];
-      if (state && state.checked) {
-        checkedItems.push({
-          product_id: p.id,
-          product_name: p.name,
-          category: p.category || '',
-          unit: p.unit || 'पीस',
-          quantity: state.qty || 1,
-          purchase_price: p.purchase_price,
-          selling_price: p.selling_price
-        });
-      }
-    });
-
-    if (checkedItems.length === 0) {
-      App.showToast('कम से कम एक सामान पर टिक मार्क (✓) लगाएं', 'warning');
-      return;
-    }
+    if (countEl) countEl.innerText = `${selectedCount} सामान`;
+    if (costEl) costEl.innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (profitEl) profitEl.innerText = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     const saveBtn = document.getElementById('saveTripBtn');
     if (saveBtn) {
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> सेव हो रहा है...`;
-    }
-
-    try {
-      const res = await API.saveTrip({
-        trip_date: tripDate,
-        title: tripTitle,
-        notes: '',
-        items: checkedItems
-      });
-
-      App.showToast(`तारीख ${tripDate} की खरीदारी सुरक्षित हो गई! (कुल: ₹${res.total_purchase_cost})`, 'success');
-      setTimeout(() => {
-        App.switchTab('history');
-      }, 500);
-    } catch (err) {
-      App.showToast('त्रुटि: ' + err.message, 'error');
-    } finally {
-      if (saveBtn) {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> <span>खरीदारी सुरक्षित करें (Save)</span>`;
-      }
+      saveBtn.disabled = selectedCount === 0;
+      saveBtn.style.opacity = selectedCount === 0 ? '0.6' : '1';
     }
   },
 
   openBillModal() {
-    const tripDate = document.getElementById('tripDate')?.value || '--';
-    const tripTitle = document.getElementById('tripTitle')?.value.trim() || 'दुकान खरीदारी';
+    const today = document.getElementById('tripDate')?.value || new Date().toISOString().split('T')[0];
+    const mandi = document.getElementById('tripTitle')?.value || 'सदर मंडी';
 
-    document.getElementById('billSlipDate').innerText = tripDate;
-    document.getElementById('billSlipTitle').innerText = tripTitle;
+    document.getElementById('billSlipDate').innerText = today;
+    document.getElementById('billSlipTitle').innerText = mandi;
 
     const tbody = document.getElementById('billModalTableBody');
-    tbody.innerHTML = '';
-
-    let count = 0;
+    let html = '';
+    let itemsCount = 0;
     let totalPurchase = 0;
     let totalSelling = 0;
 
     Store.products.forEach(p => {
       const state = Store.plannerState[p.id];
       if (state && state.checked) {
-        count++;
+        itemsCount++;
         const qty = state.qty || 1;
-        const subP = p.purchase_price * qty;
-        const subS = p.selling_price * qty;
-        const profit = subS - subP;
+        const subtotalP = p.purchase_price * qty;
+        const subtotalS = p.selling_price * qty;
+        const profit = subtotalS - subtotalP;
 
-        totalPurchase += subP;
-        totalSelling += subS;
+        totalPurchase += subtotalP;
+        totalSelling += subtotalS;
 
-        tbody.innerHTML += `
-          <tr class="border-b border-slate-100">
-            <td class="py-2 font-medium text-slate-800">${p.name} <span class="text-[10px] text-slate-400">(${p.unit || 'पीस'})</span></td>
-            <td class="py-2 text-center font-bold">${qty}</td>
-            <td class="py-2 text-right">₹${p.purchase_price.toFixed(2)}</td>
-            <td class="py-2 text-right font-bold text-blue-600">₹${subP.toFixed(2)}</td>
-            <td class="py-2 text-right">₹${subS.toFixed(2)}</td>
-            <td class="py-2 text-right font-bold text-emerald-600">+₹${profit.toFixed(2)}</td>
+        html += `
+          <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 8px 0;">
+              <strong>${p.name}</strong>
+              <div style="font-size: 11px; color: #64748b;">${p.unit || 'पेटी'} (${p.sub_quantity || 1} ${p.sub_unit || 'पीस'})</div>
+            </td>
+            <td style="text-align: center;">${qty}</td>
+            <td style="text-align: right;">₹${p.purchase_price.toFixed(2)}</td>
+            <td style="text-align: right; font-weight: 700; color: #2563eb;">₹${subtotalP.toFixed(2)}</td>
+            <td style="text-align: right;">₹${subtotalS.toFixed(2)}</td>
+            <td style="text-align: right; font-weight: 700; color: #059669;">+₹${profit.toFixed(2)}</td>
           </tr>
         `;
       }
     });
 
-    const totalProfit = totalSelling - totalPurchase;
-    const margin = totalSelling > 0 ? ((totalProfit / totalSelling) * 100).toFixed(1) : 0;
+    if (itemsCount === 0) {
+      html = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: #94a3b8;">कोई सामान चयनित नहीं है</td></tr>`;
+    }
 
-    document.getElementById('billTotalItemsCount').innerText = `${count} प्रकार`;
-    document.getElementById('billTotalPurchaseCost').innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    document.getElementById('billTotalSellingValue').innerText = `₹${totalSelling.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    document.getElementById('billTotalProfit').innerText = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    document.getElementById('billMarginPercent').innerText = `${margin}% मार्जिन`;
+    tbody.innerHTML = html;
+
+    const totalProfit = totalSelling - totalPurchase;
+    const marginPercent = totalSelling > 0 ? ((totalProfit / totalSelling) * 100).toFixed(1) : 0;
+
+    document.getElementById('billTotalItemsCount').innerText = `${itemsCount} प्रकार`;
+    document.getElementById('billTotalPurchaseCost').innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('billTotalSellingValue').innerText = `₹${totalSelling.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('billTotalProfit').innerText = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${marginPercent}%)`;
+    document.getElementById('billMarginPercent').innerText = `${marginPercent}%`;
 
     document.getElementById('billModal').classList.remove('hidden');
   },
 
   closeBillModal() {
     document.getElementById('billModal').classList.add('hidden');
+  },
+
+  async saveTrip() {
+    const tripDate = document.getElementById('tripDate').value;
+    const title = document.getElementById('tripTitle').value.trim() || 'मंडी खरीदारी';
+
+    const selectedItems = [];
+    Store.products.forEach(p => {
+      const state = Store.plannerState[p.id];
+      if (state && state.checked) {
+        selectedItems.push({
+          product_id: p.id,
+          product_name: p.name,
+          category: p.category || 'किराना',
+          quantity: state.qty || 1,
+          unit: p.unit || 'पेटी',
+          purchase_price: p.purchase_price,
+          selling_price: p.selling_price
+        });
+      }
+    });
+
+    if (selectedItems.length === 0) {
+      App.showToast('कृपया पहले सामान चेकलिस्ट में चुनें', 'warning');
+      return;
+    }
+
+    try {
+      const payload = {
+        trip_date: tripDate,
+        title: title,
+        items: selectedItems
+      };
+      await API.saveTrip(payload);
+      App.showToast('खरीदारी का रिकॉर्ड सफलतापूर्वक सुरक्षित हो गया!', 'success');
+      await HistoryModule.load();
+      await App.refreshProducts();
+    } catch (err) {
+      App.showToast('रिकॉर्ड सेव नहीं हो सका: ' + err.message, 'error');
+    }
   }
 };

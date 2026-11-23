@@ -1,4 +1,4 @@
-// Tab 2: Inventory / Product CRUD & Import Logic
+// Tab 2: Inventory / Product CRUD & Mobile Cards Logic
 
 const InventoryModule = {
   renderDropdown() {
@@ -18,7 +18,7 @@ const InventoryModule = {
 
   renderTable() {
     const tbody = document.getElementById('inventoryTableBody');
-    if (!tbody) return;
+    const cardsContainer = document.getElementById('inventoryMobileCards');
 
     const searchTxt = (document.getElementById('inventorySearch')?.value || '').toLowerCase().trim();
     const catFilter = document.getElementById('inventoryCategoryFilter')?.value || 'all';
@@ -33,7 +33,9 @@ const InventoryModule = {
       return matchesSearch && matchesCat;
     });
 
-    let html = '';
+    let tableHtml = '';
+    let cardsHtml = '';
+
     filtered.forEach(p => {
       const subQty = p.sub_quantity || 1;
       const subUnit = p.sub_unit || 'पीस';
@@ -43,69 +45,100 @@ const InventoryModule = {
       const totalProfit = (p.total_profit_per_pack || (p.selling_price - p.purchase_price)).toFixed(2);
       const margin = p.margin_percent || 0;
 
-      html += `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-3 px-4 text-xs font-mono text-slate-400">#${p.id}</td>
-          
-          <!-- Product Name -->
-          <td class="py-3 px-4 font-semibold text-slate-900">
-            ${p.name}
-            ${p.notes ? `<p class="text-xs text-slate-400 font-normal">${p.notes}</p>` : ''}
+      // 1. Desktop Table Row
+      tableHtml += `
+        <tr>
+          <td style="color: #94a3b8; font-family: monospace;">#${p.id}</td>
+          <td>
+            <strong style="color: #0f172a; font-size: 14px;">${p.name}</strong>
+            ${p.notes ? `<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">${p.notes}</div>` : ''}
           </td>
-
-          <!-- Category -->
-          <td class="py-3 px-4">
-            <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-full font-medium">${p.category || 'सामान्य'}</span>
+          <td>
+            <span class="badge badge-slate">${p.category || 'सामान्य'}</span>
           </td>
-
-          <!-- Wholesale Pack & Sub-quantity -->
-          <td class="py-3 px-4 text-xs">
-            <div class="font-bold text-slate-800">${p.unit || 'पेटी'}</div>
-            <div class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-1.5 py-0.5 rounded inline-block mt-0.5">
+          <td>
+            <strong style="color: #334155;">${p.unit || 'पेटी'}</strong>
+            <div style="font-size: 11px; color: #2563eb; font-weight: 700; margin-top: 2px;">
               1 पैक = ${subQty} ${subUnit}
             </div>
           </td>
-
-          <!-- Wholesale Buy Price -->
-          <td class="py-3 px-4 text-right">
-            <div class="font-extrabold text-blue-600">₹${p.purchase_price.toFixed(2)}</div>
-            <div class="text-[10px] text-slate-400">₹${unitBuy} /${subUnit}</div>
+          <td style="text-align: right;">
+            <div style="font-weight: 800; color: #2563eb;">₹${p.purchase_price.toFixed(2)}</div>
+            <div style="font-size: 10px; color: #94a3b8;">₹${unitBuy} /${subUnit}</div>
           </td>
-
-          <!-- Retail Selling Rate -->
-          <td class="py-3 px-4 text-right">
-            <div class="font-bold text-slate-800">₹${retailSell} <span class="text-[10px] text-slate-400 font-normal">/${subUnit}</span></div>
-            <div class="text-[10px] text-slate-500">कुल ₹${p.selling_price.toFixed(2)} /पैक</div>
+          <td style="text-align: right;">
+            <div style="font-weight: 800; color: #0f172a;">₹${retailSell} <span style="font-size: 10px; color: #94a3b8; font-weight: normal;">/${subUnit}</span></div>
+            <div style="font-size: 10px; color: #64748b;">कुल ₹${p.selling_price.toFixed(2)}</div>
           </td>
-
-          <!-- Unit Profit -->
-          <td class="py-3 px-4 text-right">
-            <span class="font-bold text-emerald-600 text-xs">+₹${unitProfit}</span>
-            <span class="text-[10px] text-slate-400 block font-normal">प्रति ${subUnit}</span>
+          <td style="text-align: right;">
+            <span style="font-weight: 800; color: #059669;">+₹${unitProfit}</span>
+            <div style="font-size: 10px; color: #94a3b8;">प्रति ${subUnit}</div>
           </td>
-
-          <!-- Total Pack Profit & Margin -->
-          <td class="py-3 px-4 text-right">
-            <div class="font-extrabold text-emerald-700">+₹${totalProfit}</div>
-            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full inline-block mt-0.5">${margin}% मार्जिन</span>
+          <td style="text-align: right;">
+            <div style="font-weight: 800; color: #059669;">+₹${totalProfit}</div>
+            <span class="badge badge-green" style="font-size: 10px; margin-top: 2px;">${margin}% मार्जिन</span>
           </td>
-
-          <!-- Action Buttons -->
-          <td class="py-3 px-4 text-center">
-            <div class="flex items-center justify-center space-x-1.5">
-              <button onclick="InventoryModule.openEditModal(${p.id})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="एडिट करें">
-                <i class="fa-solid fa-pen-to-square"></i>
+          <td style="text-align: center;">
+            <div style="display: flex; gap: 6px; justify-content: center;">
+              <button onclick="InventoryModule.openEditModal(${p.id})" class="btn btn-outline btn-sm" title="एडिट करें">
+                ✏️
               </button>
-              <button onclick="InventoryModule.deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="डिलीट करें">
-                <i class="fa-solid fa-trash-can"></i>
+              <button onclick="InventoryModule.deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="btn btn-sm" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;" title="डिलीट करें">
+                🗑️
               </button>
             </div>
           </td>
         </tr>
       `;
+
+      // 2. Dedicated Mobile Card
+      cardsHtml += `
+        <div class="mobile-item-card">
+          <div class="mobile-card-top">
+            <div style="flex: 1;">
+              <span class="mobile-prod-name">${p.name}</span>
+              ${p.notes ? `<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">${p.notes}</div>` : ''}
+            </div>
+            <span class="badge badge-slate">${p.category || 'सामान्य'}</span>
+          </div>
+
+          <div class="mobile-pack-info">
+            <span>📦 थोक पैकिंग: <strong>${p.unit || 'पेटी'}</strong> (${subQty} ${subUnit})</span>
+            <span class="badge badge-green">${margin}% मार्जिन</span>
+          </div>
+
+          <div class="mobile-rates-grid">
+            <div class="rate-cell">
+              <span class="rate-lbl">थोक खरीद</span>
+              <span class="rate-val buy">₹${p.purchase_price.toFixed(2)}</span>
+              <span style="font-size: 9px; color: #94a3b8;">₹${unitBuy}/${subUnit}</span>
+            </div>
+            <div class="rate-cell">
+              <span class="rate-lbl">फुटकर बिक्री</span>
+              <span class="rate-val sell">₹${retailSell}</span>
+              <span style="font-size: 9px; color: #94a3b8;">/${subUnit}</span>
+            </div>
+            <div class="rate-cell">
+              <span class="rate-lbl">पेटी मुनाफा</span>
+              <span class="rate-val profit">+₹${totalProfit}</span>
+              <span style="font-size: 9px; color: #059669;">+₹${unitProfit}/${subUnit}</span>
+            </div>
+          </div>
+
+          <div class="mobile-card-bottom" style="justify-content: flex-end; gap: 8px;">
+            <button onclick="InventoryModule.openEditModal(${p.id})" class="btn btn-outline btn-sm">
+              ✏️ एडिट करें
+            </button>
+            <button onclick="InventoryModule.deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="btn btn-sm" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+              🗑️ हटाएं
+            </button>
+          </div>
+        </div>
+      `;
     });
 
-    tbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = tableHtml;
+    if (cardsContainer) cardsContainer.innerHTML = cardsHtml;
   },
 
   openAddModal() {
@@ -211,38 +244,6 @@ const InventoryModule = {
       await App.refreshCategories();
     } catch (err) {
       App.showToast('डिलीट नहीं हो सका: ' + err.message, 'error');
-    }
-  },
-
-  openBulkModal() {
-    document.getElementById('bulkInputText').value = '';
-    document.getElementById('bulkStatusMsg').innerText = '';
-    document.getElementById('bulkModal').classList.remove('hidden');
-  },
-
-  closeBulkModal() {
-    document.getElementById('bulkModal').classList.add('hidden');
-  },
-
-  async executeBulkImport() {
-    const rawText = document.getElementById('bulkInputText').value.trim();
-    if (!rawText) {
-      App.showToast('कृपया पहले लिस्ट पेस्ट करें', 'warning');
-      return;
-    }
-
-    const statusMsg = document.getElementById('bulkStatusMsg');
-    statusMsg.innerText = 'इम्पोर्ट किया जा रहा है...';
-
-    try {
-      const res = await API.bulkImport(rawText);
-      App.showToast(`${res.count} सामान सफलतापूर्वक जोड़ दिए गए!`, 'success');
-      this.closeBulkModal();
-      await App.refreshProducts();
-      await App.refreshCategories();
-    } catch (err) {
-      statusMsg.innerText = 'इम्पोर्ट विफल: ' + err.message;
-      App.showToast('त्रुटि: ' + err.message, 'error');
     }
   }
 };

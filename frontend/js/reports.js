@@ -15,20 +15,22 @@ const ReportsModule = {
       const topContainer = document.getElementById('analyticsTopItems');
       if (topContainer) {
         if (data.top_items.length === 0) {
-          topContainer.innerHTML = `<p class="text-xs text-slate-400 py-3">जब आप खरीदारी सुरक्षित करेंगे, तो सबसे ज्यादा खरीदा गया सामान यहाँ दिखेगा।</p>`;
+          topContainer.innerHTML = `<p style="font-size: 13px; color: #94a3b8; padding: 12px 0;">जब आप खरीदारी सुरक्षित करेंगे, तो सबसे ज्यादा खरीदा गया सामान यहाँ दिखेगा।</p>`;
         } else {
           let html = '';
           data.top_items.forEach((it, i) => {
             html += `
-              <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                <div class="flex items-center space-x-3">
-                  <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 text-xs font-bold flex items-center justify-center">${i + 1}</span>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="width: 26px; height: 26px; border-radius: 50%; background: #fef3c7; color: #b45309; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;">
+                    ${i + 1}
+                  </span>
                   <div>
-                    <p class="text-sm font-bold text-slate-800">${it.product_name}</p>
-                    <p class="text-xs text-slate-500">कुल मात्रा: ${it.total_qty} ${it.unit || ''}</p>
+                    <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${it.product_name}</div>
+                    <div style="font-size: 11px; color: #64748b;">कुल मात्रा: ${it.total_qty} ${it.unit || ''}</div>
                   </div>
                 </div>
-                <span class="text-sm font-extrabold text-blue-600">₹${it.total_spent.toLocaleString('en-IN')}</span>
+                <strong style="font-size: 15px; color: #2563eb;">₹${it.total_spent.toLocaleString('en-IN')}</strong>
               </div>
             `;
           });

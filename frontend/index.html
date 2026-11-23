@@ -10,303 +10,236 @@
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081840.png">
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- HTML5 QR & Barcode Scanner -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <!-- Custom Styling -->
+  
+  <!-- 100% Offline Standalone Stylesheet -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col pb-28 md:pb-16 select-none sm:select-auto">
+<body>
 
-  <!-- TOP HEADER (DESKTOP & MOBILE) -->
-  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-sm transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <!-- Logo & Branding -->
-        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('planner')">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 transform transition hover:rotate-3">
-            <i class="fa-solid fa-shop text-lg"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">दुकान सहायक</h1>
-              <span class="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-[11px] px-2 py-0.5 rounded-full font-bold border border-blue-200/60 hidden sm:inline-block">Pro v2.0</span>
-            </div>
-            <p class="text-[11px] text-slate-500 hidden sm:block font-medium">थोक खरीद, फुटकर बिक्री व मुनाफा प्रबंधक</p>
-          </div>
+  <!-- ==================== TOP HEADER ==================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper" onclick="switchTab('planner')">
+        <div class="brand-icon">🏪</div>
+        <div class="brand-info">
+          <h1>दुकान सहायक <span class="brand-badge">Pro v2.0</span></h1>
+          <p class="brand-subtitle">थोक खरीद, फुटकर बिक्री व मुनाफा प्रबंधक</p>
         </div>
+      </div>
 
-        <!-- Desktop Navigation Tabs -->
-        <nav class="hidden md:flex items-center space-x-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
-          <button onclick="switchTab('planner')" id="tabBtn-planner" class="nav-tab active-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-white text-blue-600 shadow-sm">
-            <i class="fa-solid fa-list-check"></i>
-            <span>खरीदारी लिस्ट</span>
-          </button>
-          <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <span>सामान सूची</span>
-          </button>
-          <button onclick="switchTab('history')" id="tabBtn-history" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>खरीद इतिहास</span>
-          </button>
-          <button onclick="switchTab('reports')" id="tabBtn-reports" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>रिपोर्ट</span>
-          </button>
-        </nav>
+      <!-- Desktop Navigation Menu -->
+      <nav class="desktop-nav">
+        <button onclick="switchTab('planner')" id="tabBtn-planner" class="nav-tab-btn active-tab">
+          📋 खरीदारी लिस्ट
+        </button>
+        <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="nav-tab-btn">
+          📦 सामान सूची
+        </button>
+        <button onclick="switchTab('history')" id="tabBtn-history" class="nav-tab-btn">
+          🕒 खरीद इतिहास
+        </button>
+        <button onclick="switchTab('reports')" id="tabBtn-reports" class="nav-tab-btn">
+          📊 रिपोर्ट
+        </button>
+      </nav>
 
-        <!-- Right Quick Actions -->
-        <div class="flex items-center space-x-2">
-          <!-- Barcode Scanner Trigger -->
-          <button onclick="openBarcodeScannerModal()" class="btn-tactile p-2 sm:px-3 sm:py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold transition flex items-center space-x-1.5" title="कैमरा से बारकोड स्कैन करें">
-            <i class="fa-solid fa-barcode text-sm"></i>
-            <span class="hidden sm:inline">बारकोड स्कैन</span>
-          </button>
-          <!-- Backup Download -->
-          <a href="/api/backup/download" class="btn-tactile p-2 sm:px-3 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center space-x-1.5" title="डेटाबेस बैकअप डाउनलोड करें">
-            <i class="fa-solid fa-download text-sm"></i>
-            <span class="hidden sm:inline">बैकअप</span>
-          </a>
-        </div>
+      <!-- Right Header Actions -->
+      <div class="header-actions">
+        <a href="/api/backup/download" class="btn btn-outline btn-sm" title="डेटाबेस बैकअप डाउनलोड करें">
+          💾 बैकअप
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 flex-1 w-full">
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-wrapper">
 
     <!-- ==================== TAB 1: PURCHASING CHECKLIST / PLANNER ==================== -->
-    <section id="tab-planner" class="tab-content block space-y-4 sm:space-y-5">
+    <section id="tab-planner" class="tab-content">
       <!-- Control Bar -->
-      <div class="card-elevated p-4 sm:p-5 rounded-2xl space-y-3 sm:space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          <!-- Trip Date -->
-          <div class="sm:col-span-3">
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-              <i class="fa-regular fa-calendar-days text-blue-600 mr-1"></i> खरीद तारीख (Trip Date)
-            </label>
-            <input type="date" id="tripDate" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
+      <div class="card card-padding">
+        <div class="grid-cols-3">
+          <div>
+            <label class="form-label">📅 खरीद तारीख (Trip Date)</label>
+            <input type="date" id="tripDate" class="input-field">
           </div>
-
-          <!-- Mandi / Market Name -->
-          <div class="sm:col-span-4">
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> मंडी / मार्केट का नाम
-            </label>
-            <input type="text" id="tripTitle" placeholder="उदा. सदर मंडी / थोक बाजार" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
+          <div>
+            <label class="form-label">📍 मंडी / मार्केट का नाम</label>
+            <input type="text" id="tripTitle" placeholder="उदा. सदर मंडी / थोक बाजार" class="input-field">
           </div>
-
-          <!-- Instant Search Bar -->
-          <div class="sm:col-span-5">
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-magnifying-glass text-slate-400 mr-1"></i> सामान सर्च करें
-            </label>
-            <div class="relative">
-              <input type="text" id="plannerSearch" placeholder="सामान का नाम या पैकिंग खोजें..." oninput="filterPlannerItems()" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs sm:text-sm"></i>
-              <button onclick="clearPlannerSearch()" id="clearPlannerSearchBtn" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
-                <i class="fa-solid fa-circle-xmark"></i>
-              </button>
+          <div>
+            <label class="form-label">🔍 सामान सर्च करें</label>
+            <div style="position: relative;">
+              <input type="text" id="plannerSearch" placeholder="सामान का नाम या पैकिंग खोजें..." oninput="filterPlannerItems()" class="input-field">
+              <button onclick="clearPlannerSearch()" id="clearPlannerSearchBtn" class="hidden" style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 14px; cursor: pointer; color: #94a3b8;">✕</button>
             </div>
           </div>
         </div>
 
-        <!-- Category Filter Chips -->
-        <div class="flex items-center space-x-1.5 overflow-x-auto pt-1 pb-1 text-xs no-scrollbar" id="plannerCategoryPills">
-          <!-- Dynamic Category Pills -->
+        <!-- Category Filter Pills -->
+        <div style="margin-top: 12px;">
+          <div class="category-pills-bar" id="plannerCategoryPills">
+            <!-- Dynamic Pills Rendered via JS -->
+          </div>
         </div>
       </div>
 
-      <!-- Checklist Table & Card Container -->
-      <div class="card-elevated rounded-2xl overflow-hidden">
-        <div class="px-4 py-3 sm:px-5 sm:py-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/70">
-          <div class="flex items-center space-x-2">
-            <span class="font-extrabold text-slate-800 text-sm sm:text-base">खरीदारी चेकलिस्ट (सामान चुनें)</span>
-            <span id="plannerTotalCountBadge" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0 सामान</span>
+      <!-- Checklist Container -->
+      <div class="card">
+        <div style="padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <strong style="font-size: 15px; color: #0f172a;">खरीदारी चेकलिस्ट (सामान चुनें)</strong>
+            <span id="plannerTotalCountBadge" class="badge badge-blue">0 सामान</span>
           </div>
-          <div class="flex items-center space-x-2 text-xs">
-            <button onclick="selectAllPlanner(true)" class="btn-tactile px-2.5 py-1 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg font-bold transition">
-              <i class="fa-solid fa-check-double mr-1"></i> सभी चुनें
-            </button>
-            <button onclick="selectAllPlanner(false)" class="btn-tactile px-2.5 py-1 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold transition">
-              <i class="fa-solid fa-xmark mr-1"></i> अनचेक
-            </button>
-            <button onclick="openAddProductModal()" class="btn-tactile px-3 py-1 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition shadow-sm">
-              <i class="fa-solid fa-plus mr-1"></i> नया सामान
-            </button>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="selectAllPlanner(true)" class="btn btn-outline btn-sm">✓ सभी चुनें</button>
+            <button onclick="selectAllPlanner(false)" class="btn btn-outline btn-sm">✕ अनचेक</button>
+            <button onclick="openAddProductModal()" class="btn btn-primary btn-sm">+ नया सामान</button>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+        <!-- 1. Desktop Table View -->
+        <div class="desktop-table-container">
+          <table class="dukan-table">
             <thead>
-              <tr class="bg-slate-50/80 text-slate-600 text-[11px] sm:text-xs uppercase font-extrabold border-b border-slate-200 tracking-wider">
-                <th class="py-3 px-3 sm:px-4 w-10 text-center">चुनें</th>
-                <th class="py-3 px-3 sm:px-4">सामान व थोक पैकिंग</th>
-                <th class="py-3 px-3 sm:px-4 hidden sm:table-cell">श्रेणी</th>
-                <th class="py-3 px-3 sm:px-4 text-right">थोक खरीद भाव</th>
-                <th class="py-3 px-3 sm:px-4 text-right">फुटकर बिक्री भाव</th>
-                <th class="py-3 px-3 sm:px-4 text-center w-32 sm:w-36">मात्रा (Qty)</th>
-                <th class="py-3 px-3 sm:px-4 text-right">कुल खरीद (₹)</th>
-                <th class="py-3 px-3 sm:px-4 text-right">संभावित मुनाफा</th>
+              <tr>
+                <th style="width: 45px; text-align: center;">चुनें</th>
+                <th>सामान व थोक पैकिंग</th>
+                <th>श्रेणी</th>
+                <th style="text-align: right;">थोक खरीद भाव</th>
+                <th style="text-align: right;">फुटकर बिक्री भाव</th>
+                <th style="text-align: center; width: 140px;">मात्रा (Qty)</th>
+                <th style="text-align: right;">कुल खरीद (₹)</th>
+                <th style="text-align: right;">संभावित मुनाफा</th>
               </tr>
             </thead>
-            <tbody id="plannerTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm">
+            <tbody id="plannerTableBody">
               <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
 
-        <div id="plannerEmptyState" class="hidden py-12 text-center text-slate-400">
-          <i class="fa-solid fa-magnifying-glass text-4xl mb-3 text-slate-300"></i>
-          <p class="font-bold text-slate-700">कोई सामान नहीं मिला</p>
-          <p class="text-xs text-slate-400 mt-1">सर्च शब्द बदलें या नया सामान जोड़ें</p>
+        <!-- 2. Dedicated Mobile Cards View -->
+        <div class="mobile-cards-container" id="plannerMobileCards" style="padding: 12px;">
+          <!-- Rendered via JS -->
+        </div>
+
+        <div id="plannerEmptyState" class="hidden" style="padding: 40px; text-align: center; color: #94a3b8;">
+          <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
+          <p style="font-weight: 700; color: #334155;">कोई सामान नहीं मिला</p>
+          <p style="font-size: 12px; margin-top: 4px;">सर्च शब्द बदलें या नया सामान जोड़ें</p>
         </div>
       </div>
     </section>
 
     <!-- ==================== TAB 2: INVENTORY / PRODUCT MASTER ==================== -->
-    <section id="tab-inventory" class="tab-content hidden space-y-4 sm:space-y-5">
-      <div class="card-elevated p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="w-full md:w-1/2 flex items-center space-x-2 sm:space-x-3">
-          <div class="relative flex-1">
-            <input type="text" id="inventorySearch" placeholder="सामान या श्रेणी सर्च करें..." oninput="filterInventoryItems()" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs sm:text-sm"></i>
-          </div>
-          <select id="inventoryCategoryFilter" onchange="filterInventoryItems()" class="bg-slate-50 border border-slate-300 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    <section id="tab-inventory" class="tab-content hidden">
+      <div class="card card-padding" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
+          <input type="text" id="inventorySearch" placeholder="सामान या श्रेणी सर्च करें..." oninput="filterInventoryItems()" class="input-field" style="flex: 1;">
+          <select id="inventoryCategoryFilter" onchange="filterInventoryItems()" class="input-field" style="width: 160px;">
             <option value="all">सभी श्रेणियां</option>
           </select>
         </div>
-
-        <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
-          <button onclick="openBulkImportModal()" class="btn-tactile px-3 sm:px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs sm:text-sm font-bold hover:bg-emerald-100 transition flex items-center space-x-1.5">
-            <i class="fa-solid fa-file-import"></i>
-            <span>बल्क इम्पोर्ट</span>
-          </button>
-          <button onclick="openAddProductModal()" class="btn-tactile px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-blue-700 transition flex items-center space-x-1.5 shadow-md shadow-blue-500/20">
-            <i class="fa-solid fa-plus"></i>
-            <span>नया सामान जोड़ें</span>
+        <div>
+          <button onclick="openAddProductModal()" class="btn btn-primary">
+            + नया सामान जोड़ें
           </button>
         </div>
       </div>
 
-      <div class="card-elevated rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+      <div class="card">
+        <!-- Desktop Table View -->
+        <div class="desktop-table-container">
+          <table class="dukan-table">
             <thead>
-              <tr class="bg-slate-50/80 text-slate-600 text-[11px] sm:text-xs uppercase font-extrabold border-b border-slate-200 tracking-wider">
-                <th class="py-3 px-3 sm:px-4"># ID</th>
-                <th class="py-3 px-3 sm:px-4">सामान का नाम</th>
-                <th class="py-3 px-3 sm:px-4">श्रेणी</th>
-                <th class="py-3 px-3 sm:px-4">पैकिंग व सब-क्वांटिटी</th>
-                <th class="py-3 px-3 sm:px-4 text-right">थोक खरीद</th>
-                <th class="py-3 px-3 sm:px-4 text-right">फुटकर बिक्री</th>
-                <th class="py-3 px-3 sm:px-4 text-right">प्रति पीस लाभ</th>
-                <th class="py-3 px-3 sm:px-4 text-right">पेटी कुल मुनाफा</th>
-                <th class="py-3 px-3 sm:px-4 text-center">एक्शन</th>
+              <tr>
+                <th style="width: 50px;"># ID</th>
+                <th>सामान का नाम</th>
+                <th>श्रेणी</th>
+                <th>पैकिंग व सब-क्वांटिटी</th>
+                <th style="text-align: right;">थोक खरीद</th>
+                <th style="text-align: right;">फुटकर बिक्री</th>
+                <th style="text-align: right;">प्रति पीस लाभ</th>
+                <th style="text-align: right;">पेटी कुल मुनाफा</th>
+                <th style="text-align: center; width: 120px;">एक्शन</th>
               </tr>
             </thead>
-            <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm">
+            <tbody id="inventoryTableBody">
               <!-- Rendered via JS -->
             </tbody>
           </table>
+        </div>
+
+        <!-- Dedicated Mobile Cards View -->
+        <div class="mobile-cards-container" id="inventoryMobileCards" style="padding: 12px;">
+          <!-- Rendered via JS -->
         </div>
       </div>
     </section>
 
     <!-- ==================== TAB 3: PURCHASE HISTORY & RECORDS ==================== -->
-    <section id="tab-history" class="tab-content hidden space-y-4 sm:space-y-5">
-      <div class="card-elevated p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+    <section id="tab-history" class="tab-content hidden">
+      <div class="card card-padding" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <div>
-          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">पिछली खरीदारियों का इतिहास (Purchase Trip History)</h2>
-          <p class="text-xs text-slate-500">तारीख वार किस दिन कितने का सामान आया, कुल लागत और मुनाफा</p>
+          <h2 style="font-size: 17px; font-weight: 800; color: #0f172a;">पिछली खरीदारियों का इतिहास (Trip History)</h2>
+          <p style="font-size: 12px; color: #64748b;">तारीख-वार किस दिन कितने का सामान आया, कुल लागत और मुनाफा</p>
         </div>
-        <div class="flex items-center space-x-2 w-full sm:w-auto">
-          <input type="text" id="historySearch" placeholder="तारीख या मार्केट नाम खोजें..." oninput="filterHistoryList()" class="w-full sm:w-64 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <div>
+          <input type="text" id="historySearch" placeholder="तारीख या मार्केट नाम खोजें..." oninput="filterHistoryList()" class="input-field" style="width: 220px;">
         </div>
       </div>
 
-      <div id="historyListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div id="historyListContainer" class="grid-cols-3">
         <!-- Rendered via JS -->
       </div>
 
-      <div id="historyEmptyState" class="hidden py-16 text-center bg-white rounded-2xl border border-slate-200 text-slate-400">
-        <i class="fa-solid fa-calendar-xmark text-5xl mb-3 text-slate-300"></i>
-        <p class="font-bold text-slate-700 text-base">अभी कोई खरीदारी रिकॉर्ड सुरक्षित नहीं है</p>
-        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">जब आप "खरीदारी लिस्ट" में जाकर सामान चुनकर "खरीदारी सुरक्षित करें" बटन दबाएंगे, तो उसका पूरा हिसाब यहाँ दिखेगा।</p>
-        <button onclick="switchTab('planner')" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition">
+      <div id="historyEmptyState" class="hidden" style="padding: 60px 20px; text-align: center; background: white; border: 1px solid #e2e8f0; border-radius: 16px;">
+        <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+        <p style="font-size: 16px; font-weight: 800; color: #1e293b;">अभी कोई खरीदारी रिकॉर्ड सुरक्षित नहीं है</p>
+        <p style="font-size: 13px; color: #64748b; margin-top: 6px; max-width: 400px; margin-left: auto; margin-right: auto;">
+          जब आप "खरीदारी लिस्ट" में जाकर सामान चुनकर "खरीदारी सुरक्षित करें" बटन दबाएंगे, तो उसका पूरा हिसाब यहाँ दिखेगा।
+        </p>
+        <button onclick="switchTab('planner')" class="btn btn-primary btn-sm" style="margin-top: 16px;">
           खरीदारी लिस्ट पर जाएं
         </button>
       </div>
     </section>
 
     <!-- ==================== TAB 4: REPORTS & ANALYTICS ==================== -->
-    <section id="tab-reports" class="tab-content hidden space-y-4 sm:space-y-5">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="card-elevated p-5 rounded-2xl">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">कुल खरीद लागत (Invested)</p>
-              <h3 id="analyticsPurchase" class="text-2xl font-extrabold text-slate-900 mt-1">₹0</h3>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-              <i class="fa-solid fa-wallet"></i>
-            </div>
-          </div>
-          <p class="text-xs text-slate-500 mt-3"><span id="analyticsTripsCount" class="font-bold text-slate-800">0</span> कुल खरीदारी ट्रिप्स</p>
+    <section id="tab-reports" class="tab-content hidden">
+      <div class="grid-cols-4" style="margin-bottom: 16px;">
+        <div class="card card-padding">
+          <span class="form-label">कुल खरीद लागत (Invested)</span>
+          <h3 id="analyticsPurchase" style="font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 4px;">₹0</h3>
+          <p style="font-size: 11px; color: #64748b; margin-top: 6px;"><strong id="analyticsTripsCount" style="color: #0f172a;">0</strong> कुल खरीदारी ट्रिप्स</p>
         </div>
 
-        <div class="card-elevated p-5 rounded-2xl">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">संभावित कुल बिक्री</p>
-              <h3 id="analyticsSelling" class="text-2xl font-extrabold text-slate-900 mt-1">₹0</h3>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
-              <i class="fa-solid fa-arrow-trend-up"></i>
-            </div>
-          </div>
-          <p class="text-xs text-slate-500 mt-3">स्टॉक बिकने पर अनुमानित राशि</p>
+        <div class="card card-padding">
+          <span class="form-label">संभावित कुल बिक्री</span>
+          <h3 id="analyticsSelling" style="font-size: 22px; font-weight: 800; color: #4f46e5; margin-top: 4px;">₹0</h3>
+          <p style="font-size: 11px; color: #64748b; margin-top: 6px;">स्टॉक बिकने पर अनुमानित राशि</p>
         </div>
 
-        <div class="card-elevated p-5 rounded-2xl">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">कुल शुद्ध मुनाफा (Profit)</p>
-              <h3 id="analyticsProfit" class="text-2xl font-extrabold text-emerald-600 mt-1">₹0</h3>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-              <i class="fa-solid fa-indian-rupee-sign"></i>
-            </div>
-          </div>
-          <p class="text-xs text-slate-500 mt-3">औसत मार्जिन: <span id="analyticsMargin" class="font-bold text-emerald-600">0%</span></p>
+        <div class="card card-padding">
+          <span class="form-label" style="color: #059669;">कुल शुद्ध मुनाफा (Profit)</span>
+          <h3 id="analyticsProfit" style="font-size: 22px; font-weight: 800; color: #059669; margin-top: 4px;">₹0</h3>
+          <p style="font-size: 11px; color: #64748b; margin-top: 6px;">औसत मार्जिन: <strong id="analyticsMargin" style="color: #059669;">0%</strong></p>
         </div>
 
-        <div class="card-elevated p-5 rounded-2xl">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">कुल उत्पाद (Products)</p>
-              <h3 id="analyticsProducts" class="text-2xl font-extrabold text-slate-900 mt-1">0</h3>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-              <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-          </div>
-          <p class="text-xs text-slate-500 mt-3">दुकान की इनवेंटरी लिस्ट में</p>
+        <div class="card card-padding">
+          <span class="form-label">कुल उत्पाद (Products)</span>
+          <h3 id="analyticsProducts" style="font-size: 22px; font-weight: 800; color: #d97706; margin-top: 4px;">0</h3>
+          <p style="font-size: 11px; color: #64748b; margin-top: 6px;">दुकान की इनवेंटरी लिस्ट में</p>
         </div>
       </div>
 
-      <div class="card-elevated p-5 rounded-2xl">
-        <h3 class="text-base font-extrabold text-slate-900 mb-4 flex items-center">
-          <i class="fa-solid fa-fire text-amber-500 mr-2"></i> सबसे ज्यादा खरीदा गया सामान (Top Purchased Items)
+      <div class="card card-padding">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">
+          🔥 सबसे ज्यादा खरीदा गया सामान (Top Purchased Items)
         </h3>
-        <div id="analyticsTopItems" class="space-y-3">
+        <div id="analyticsTopItems" style="display: flex; flex-direction: column; gap: 8px;">
           <!-- Rendered via JS -->
         </div>
       </div>
@@ -315,350 +248,264 @@
   </main>
 
   <!-- ==================== STICKY BOTTOM PURCHASING BAR ==================== -->
-  <div id="plannerBottomBar" class="fixed bottom-14 md:bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2.5 sm:py-3 px-3 sm:px-8 z-20 shadow-2xl transition-transform duration-300">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2.5 sm:gap-3">
-      <div class="flex flex-wrap items-center gap-3 sm:gap-8 w-full md:w-auto justify-between sm:justify-start text-left">
-        <div>
-          <span class="text-[10px] sm:text-xs text-slate-500 block font-medium">चयनित सामान</span>
-          <span id="barSelectedCount" class="text-sm sm:text-lg font-extrabold text-slate-800">0 सामान</span>
+  <div id="plannerBottomBar" class="sticky-bottom-bar">
+    <div class="bottom-bar-container">
+      <div class="bottom-metrics-group">
+        <div class="metric-item">
+          <span class="metric-lbl">चयनित सामान</span>
+          <span id="barSelectedCount" class="metric-val">0 सामान</span>
         </div>
-        <div class="border-l border-slate-200 pl-3 sm:pl-6">
-          <span class="text-[10px] sm:text-xs text-slate-500 block font-medium">कुल खरीद लागत</span>
-          <span id="barPurchaseCost" class="text-base sm:text-xl font-extrabold text-blue-600">₹0.00</span>
+        <div class="metric-item" style="border-left: 1px solid #cbd5e1; padding-left: 14px;">
+          <span class="metric-lbl">कुल खरीद लागत</span>
+          <span id="barPurchaseCost" class="metric-val blue">₹0.00</span>
         </div>
-        <div class="border-l border-slate-200 pl-3 sm:pl-6 hidden sm:block">
-          <span class="text-[10px] sm:text-xs text-slate-500 block font-medium">संभावित बिक्री मूल्य</span>
-          <span id="barSellingValue" class="text-base sm:text-lg font-bold text-slate-700">₹0.00</span>
-        </div>
-        <div class="border-l border-slate-200 pl-3 sm:pl-6">
-          <span class="text-[10px] sm:text-xs text-emerald-600 block font-bold">अनुमानित मुनाफा</span>
-          <span id="barProfit" class="text-base sm:text-xl font-extrabold text-emerald-600">₹0.00</span>
+        <div class="metric-item" style="border-left: 1px solid #cbd5e1; padding-left: 14px;">
+          <span class="metric-lbl" style="color: #059669;">अनुमानित मुनाफा</span>
+          <span id="barProfit" class="metric-val green">₹0.00</span>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
-        <button onclick="openBillBreakdownModal()" class="btn-tactile flex-1 md:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-receipt text-slate-500"></i>
-          <span>बिल विवरण</span>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button onclick="openBillBreakdownModal()" class="btn btn-outline">
+          📄 बिल विवरण
         </button>
-        <button onclick="saveCurrentTrip()" id="saveTripBtn" class="btn-tactile flex-1 md:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-1.5">
-          <i class="fa-solid fa-floppy-disk"></i>
-          <span>खरीदारी सुरक्षित करें (Save)</span>
+        <button onclick="saveCurrentTrip()" id="saveTripBtn" class="btn btn-success">
+          💾 खरीदारी सुरक्षित करें (Save)
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== MOBILE BOTTOM NAVIGATION BAR (md:hidden) ==================== -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-1.5 px-2 z-30 flex justify-around items-center shadow-lg">
-    <button onclick="switchTab('planner')" id="mobileNav-planner" class="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-blue-600 font-bold transition">
-      <i class="fa-solid fa-list-check text-lg"></i>
-      <span class="text-[10px] mt-0.5">चेकलिस्ट</span>
+  <!-- ==================== MOBILE BOTTOM APP NAVIGATION BAR ==================== -->
+  <nav class="mobile-nav-bar">
+    <button onclick="switchTab('planner')" id="mobileNav-planner" class="mobile-nav-item active">
+      <span style="font-size: 18px;">📋</span>
+      <span>चेकलिस्ट</span>
     </button>
-    <button onclick="switchTab('inventory')" id="mobileNav-inventory" class="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 font-bold transition">
-      <i class="fa-solid fa-boxes-stacked text-lg"></i>
-      <span class="text-[10px] mt-0.5">सामान</span>
+    <button onclick="switchTab('inventory')" id="mobileNav-inventory" class="mobile-nav-item">
+      <span style="font-size: 18px;">📦</span>
+      <span>सामान</span>
     </button>
-    <button onclick="switchTab('history')" id="mobileNav-history" class="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 font-bold transition">
-      <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-      <span class="text-[10px] mt-0.5">इतिहास</span>
+    <button onclick="switchTab('history')" id="mobileNav-history" class="mobile-nav-item">
+      <span style="font-size: 18px;">🕒</span>
+      <span>इतिहास</span>
     </button>
-    <button onclick="switchTab('reports')" id="mobileNav-reports" class="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 font-bold transition">
-      <i class="fa-solid fa-chart-pie text-lg"></i>
-      <span class="text-[10px] mt-0.5">रिपोर्ट</span>
+    <button onclick="switchTab('reports')" id="mobileNav-reports" class="mobile-nav-item">
+      <span style="font-size: 18px;">📊</span>
+      <span>रिपोर्ट</span>
     </button>
-  </div>
+  </nav>
 
   <!-- ==================== MODAL: ADD / EDIT PRODUCT ==================== -->
-  <div id="productModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-auto transform transition-all">
-      <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 id="productModalTitle" class="font-extrabold text-slate-900 text-sm sm:text-base">नया सामान जोड़ें</h3>
-        <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+  <div id="productModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="productModalTitle" class="modal-title">नया सामान जोड़ें</h3>
+        <button onclick="closeProductModal()" class="modal-close-btn">✕</button>
       </div>
-      <form id="productForm" onsubmit="handleProductSubmit(event)" class="p-4 sm:p-6 space-y-3.5">
-        <input type="hidden" id="editProductId">
+      <form id="productForm" onsubmit="handleProductSubmit(event)">
+        <div class="modal-body">
+          <input type="hidden" id="editProductId">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="sm:col-span-2">
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">सामान का नाम *</label>
-            <input type="text" id="prodName" required placeholder="उदा. तुलसी तेल (Tulsi Oil)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
+          <div class="form-group">
+            <label class="form-label">सामान का नाम *</label>
+            <input type="text" id="prodName" required placeholder="उदा. तुलसी तेल (Tulsi Oil)" class="input-field">
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">श्रेणी (Category)</label>
-            <input type="text" id="prodCategory" list="categoriesDatalist" placeholder="तेल, किराना, मसाले..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-            <datalist id="categoriesDatalist"></datalist>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">थोक पैकिंग (Pack Unit)</label>
-            <input type="text" id="prodUnit" placeholder="उदा. 1 पेटी, 1 बोरी, 1 पैकेट" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-          </div>
-        </div>
 
-        <!-- Sub-quantity & Sub-unit box -->
-        <div class="bg-blue-50/50 border border-blue-100 p-3.5 rounded-xl space-y-2">
-          <span class="text-xs font-extrabold text-blue-900 block flex items-center">
-            <i class="fa-solid fa-boxes-packing mr-1.5 text-blue-600"></i> थोक पैकिंग के अंदर की सब-क्वांटिटी (Sub-Quantity)
-          </span>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">अंदर कुल पीस/पाउच *</label>
-              <input type="number" min="0.1" step="any" id="prodSubQuantity" value="1" required oninput="calculateModalProfit()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-extrabold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
-              <span class="text-[10px] text-slate-400">उदा. 12 पाउच या 960 पीस</span>
+          <div class="grid-cols-2">
+            <div class="form-group">
+              <label class="form-label">श्रेणी (Category)</label>
+              <input type="text" id="prodCategory" list="categoriesDatalist" placeholder="तेल, किराना, मसाले..." class="input-field">
+              <datalist id="categoriesDatalist"></datalist>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">फुटकर इकाई (Sub-Unit)</label>
-              <select id="prodSubUnit" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
-                <option value="पाउच">पाउच (Pouch)</option>
-                <option value="पीस">पीस (Pcs)</option>
-                <option value="पैकेट">पैकेट (Pkt)</option>
-                <option value="डब्बी">डब्बी (Box/Can)</option>
-                <option value="बोतल">बोतल (Bottle)</option>
-                <option value="किलो / ग्राम">किलो / ग्राम (Kg/g)</option>
-              </select>
+            <div class="form-group">
+              <label class="form-label">थोक पैकिंग (Pack Unit)</label>
+              <input type="text" id="prodUnit" placeholder="उदा. 1 पेटी, 1 बोरी, 1 पैकेट" class="input-field">
             </div>
           </div>
-        </div>
 
-        <!-- Pricing: Wholesale Buy Price & Retail Sell Price -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">1 पेटी थोक खरीद (₹) *</label>
-            <input type="number" step="0.01" id="prodPurchasePrice" required placeholder="उदा. 1680" oninput="calculateModalProfit()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-extrabold text-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-            <span class="text-[10px] text-slate-400">पूरी पेटी का थोक भाव</span>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">प्रति पीस फुटकर बिक्री (₹) *</label>
-            <input type="number" step="0.01" id="prodRetailSellingPrice" required placeholder="उदा. 160" oninput="calculateModalProfit()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-extrabold text-emerald-600 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-            <span class="text-[10px] text-slate-400">1 पाउच ग्राहक को बिक्री</span>
-          </div>
-        </div>
-
-        <!-- Live Calculation Breakdown Card -->
-        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl space-y-1.5 text-xs">
-          <div class="flex justify-between text-slate-600">
-            <span>प्रति पीस थोक खरीद दर:</span>
-            <span id="modalUnitPurchasePreview" class="font-bold text-slate-800">₹0.00</span>
-          </div>
-          <div class="flex justify-between text-slate-600">
-            <span>प्रति पीस फुटकर मुनाफा:</span>
-            <span id="modalUnitProfitPreview" class="font-bold text-emerald-600">+₹0.00</span>
-          </div>
-          <div class="border-t border-slate-200 pt-1.5 flex justify-between items-center">
-            <span class="font-bold text-slate-800">1 पेटी कुल बिक्री व मुनाफा:</span>
-            <div class="font-bold">
-              <span id="modalTotalSellingPreview" class="text-slate-700">₹0.00</span>
-              <span id="modalTotalProfitPreview" class="text-emerald-700 font-extrabold ml-1">(+₹0.00)</span>
-              <span id="modalMarginPreview" class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0% मार्जिन</span>
+          <!-- Sub-quantity & Sub-unit box -->
+          <div style="background: #f0f7ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 12px; margin-bottom: 14px;">
+            <span style="font-size: 12px; font-weight: 800; color: #1e3a8a; display: block; margin-bottom: 8px;">
+              📦 थोक पैकिंग के अंदर की सब-क्वांटिटी (Sub-Quantity)
+            </span>
+            <div class="grid-cols-2">
+              <div>
+                <label class="form-label">अंदर कुल पीस/पाउच *</label>
+                <input type="number" min="0.1" step="any" id="prodSubQuantity" value="1" required oninput="calculateModalProfit()" class="input-field" style="font-weight: 800;">
+                <span style="font-size: 10px; color: #64748b;">उदा. 12 पाउच या 960 पीस</span>
+              </div>
+              <div>
+                <label class="form-label">फुटकर इकाई (Sub-Unit)</label>
+                <select id="prodSubUnit" class="input-field">
+                  <option value="पाउच">पाउच (Pouch)</option>
+                  <option value="पीस">पीस (Pcs)</option>
+                  <option value="पैकेट">पैकेट (Pkt)</option>
+                  <option value="डब्बी">डब्बी (Box/Can)</option>
+                  <option value="बोतल">बोतल (Bottle)</option>
+                  <option value="किलो / ग्राम">किलो / ग्राम (Kg/g)</option>
+                </select>
+              </div>
             </div>
           </div>
+
+          <!-- Pricing: Wholesale Buy Price & Retail Sell Price -->
+          <div class="grid-cols-2">
+            <div class="form-group">
+              <label class="form-label">1 पेटी थोक खरीद (₹) *</label>
+              <input type="number" step="0.01" id="prodPurchasePrice" required placeholder="उदा. 1680" oninput="calculateModalProfit()" class="input-field" style="font-weight: 800; color: #2563eb;">
+              <span style="font-size: 10px; color: #64748b;">पूरी पेटी का थोक भाव</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">प्रति पीस फुटकर बिक्री (₹) *</label>
+              <input type="number" step="0.01" id="prodRetailSellingPrice" required placeholder="उदा. 160" oninput="calculateModalProfit()" class="input-field" style="font-weight: 800; color: #059669;">
+              <span style="font-size: 10px; color: #64748b;">1 पाउच ग्राहक को बिक्री</span>
+            </div>
+          </div>
+
+          <!-- Live Calculation Breakdown Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; font-size: 12px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #64748b;">प्रति पीस थोक खरीद दर:</span>
+              <strong id="modalUnitPurchasePreview" style="color: #0f172a;">₹0.00</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #64748b;">प्रति पीस फुटकर मुनाफा:</span>
+              <strong id="modalUnitProfitPreview" style="color: #059669;">+₹0.00</strong>
+            </div>
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+              <strong style="color: #0f172a;">1 पेटी कुल बिक्री व मुनाफा:</strong>
+              <div>
+                <span id="modalTotalSellingPreview" style="color: #334155;">₹0.00</span>
+                <strong id="modalTotalProfitPreview" style="color: #059669; margin-left: 4px;">(+₹0.00)</strong>
+                <span id="modalMarginPreview" class="badge badge-green" style="margin-left: 4px;">0% मार्जिन</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">टिप्पणी / नोट (Optional)</label>
+            <input type="text" id="prodNotes" placeholder="थोक विक्रेता, साइज या अन्य विवरण" class="input-field">
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">टिप्पणी / नोट (Optional)</label>
-          <input type="text" id="prodNotes" placeholder="थोक विक्रेता, साइज या अन्य विवरण" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-white transition">
-        </div>
-
-        <div class="pt-2 flex items-center justify-end space-x-2">
-          <button type="button" onclick="closeProductModal()" class="btn-tactile px-4 py-2 border border-slate-300 text-slate-600 rounded-xl text-xs sm:text-sm font-bold hover:bg-slate-100 transition">
-            रद्द करें
-          </button>
-          <button type="submit" class="btn-tactile px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 transition">
-            सुरक्षित करें
-          </button>
+        <div class="modal-footer">
+          <button type="button" onclick="closeProductModal()" class="btn btn-outline">रद्द करें</button>
+          <button type="submit" class="btn btn-primary">सुरक्षित करें</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ==================== MODAL: BARCODE SCANNER ==================== -->
-  <div id="barcodeScannerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="px-5 py-4 bg-amber-50 border-b border-amber-100 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-barcode text-amber-600 text-lg"></i>
-          <h3 class="font-extrabold text-slate-900 text-sm sm:text-base">बारकोड स्कैनर (Barcode Scanner)</h3>
-        </div>
-        <button onclick="closeBarcodeScannerModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="p-5 space-y-3">
-        <p class="text-xs text-slate-600 text-center">कैमरे के सामने पैकेट का बारकोड लाएं:</p>
-        <div id="reader" class="rounded-xl overflow-hidden border border-slate-200 bg-black min-h-[250px]"></div>
-        <p id="scannerFeedback" class="text-xs font-bold text-center text-slate-600"></p>
-        <div class="pt-2 flex justify-center">
-          <button onclick="closeBarcodeScannerModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold">
-            स्कैनर बंद करें
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== MODAL: BULK IMPORT ==================== -->
-  <div id="bulkModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-file-import text-emerald-600 text-lg"></i>
-          <h3 class="font-extrabold text-slate-900 text-base">Gemini Chat / लिस्ट डायरेक्ट पेस्ट करें</h3>
-        </div>
-        <button onclick="closeBulkImportModal()" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="p-5 sm:p-6 space-y-4">
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Gemini Chat ya Excel se copy ki hui puri list yahan paste kar dijiye:
-        </p>
-        <textarea id="bulkInputText" rows="7" placeholder="Yahan list paste karein..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none focus:bg-white transition"></textarea>
-        
-        <div class="flex justify-between items-center pt-2">
-          <span id="bulkStatusMsg" class="text-xs font-bold text-slate-500"></span>
-          <div class="flex space-x-2">
-            <button onclick="closeBulkImportModal()" class="btn-tactile px-4 py-2 border border-slate-300 text-slate-600 rounded-xl text-xs sm:text-sm font-bold hover:bg-slate-100">
-              रद्द करें
-            </button>
-            <button onclick="executeBulkImport()" class="btn-tactile px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-500/20">
-              सामान लिस्ट में जोड़ें
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== MODAL: BILL BREAKDOWN & WHATSAPP ==================== -->
-  <div id="billModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
-      <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center no-print">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-receipt text-blue-600 text-lg"></i>
-          <h3 class="font-extrabold text-slate-900 text-sm sm:text-base">खरीदारी बिल व मुनाफा विवरण</h3>
-        </div>
-        <div class="flex items-center space-x-1.5 sm:space-x-2">
-          <button onclick="shareBillOnWhatsApp()" class="btn-tactile px-2.5 sm:px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition flex items-center space-x-1">
-            <i class="fa-brands fa-whatsapp text-sm"></i>
-            <span class="hidden sm:inline">WhatsApp शेयर</span>
-          </button>
-          <button onclick="window.print()" class="btn-tactile px-2.5 sm:px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-1">
-            <i class="fa-solid fa-print"></i>
-            <span class="hidden sm:inline">प्रिंट करें</span>
-          </button>
-          <button onclick="closeBillBreakdownModal()" class="text-slate-400 hover:text-slate-600 text-lg ml-1">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+  <!-- ==================== MODAL: BILL BREAKDOWN ==================== -->
+  <div id="billModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-header no-print">
+        <h3 class="modal-title">खरीदारी बिल व मुनाफा विवरण</h3>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button onclick="window.print()" class="btn btn-primary btn-sm">🖨️ प्रिंट करें</button>
+          <button onclick="closeBillBreakdownModal()" class="modal-close-btn">✕</button>
         </div>
       </div>
 
-      <div id="printableBill" class="p-5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5">
-        <div class="text-center border-b border-dashed border-slate-300 pb-3">
-          <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">दुकान सामान खरीद पर्ची</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Purchasing Slip & Margin Statement</p>
-          <div class="flex justify-between items-center text-xs text-slate-600 mt-3 px-1">
+      <div id="printableBill" class="modal-body">
+        <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 14px;">
+          <h2 style="font-size: 20px; font-weight: 800; color: #0f172a;">दुकान सामान खरीद पर्ची</h2>
+          <p style="font-size: 11px; color: #64748b;">Purchasing Slip & Margin Statement</p>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #334155; margin-top: 10px;">
             <div><strong>तारीख:</strong> <span id="billSlipDate">--</span></div>
             <div><strong>मंडी:</strong> <span id="billSlipTitle">--</span></div>
           </div>
         </div>
 
-        <table class="w-full text-left text-xs">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;">
           <thead>
-            <tr class="border-b border-slate-200 text-slate-500 uppercase font-extrabold">
-              <th class="py-2">सामान</th>
-              <th class="py-2 text-center">मात्रा</th>
-              <th class="py-2 text-right">खरीद दर</th>
-              <th class="py-2 text-right">कुल लागत</th>
-              <th class="py-2 text-right">बिक्री मूल्य</th>
-              <th class="py-2 text-right">अनुमानित लाभ</th>
+            <tr style="border-bottom: 1px solid #cbd5e1; color: #64748b; text-transform: uppercase;">
+              <th style="padding: 6px 0; text-align: left;">सामान</th>
+              <th style="padding: 6px 0; text-align: center;">मात्रा</th>
+              <th style="padding: 6px 0; text-align: right;">खरीद दर</th>
+              <th style="padding: 6px 0; text-align: right;">कुल लागत</th>
+              <th style="padding: 6px 0; text-align: right;">बिक्री मूल्य</th>
+              <th style="padding: 6px 0; text-align: right;">लाभ</th>
             </tr>
           </thead>
-          <tbody id="billModalTableBody" class="divide-y divide-slate-100">
+          <tbody id="billModalTableBody">
+            <!-- Rendered via JS -->
           </tbody>
         </table>
 
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 text-xs">
-          <div class="flex justify-between text-slate-600">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span>कुल सामान प्रकार:</span>
-            <span id="billTotalItemsCount" class="font-bold text-slate-800">0</span>
+            <strong id="billTotalItemsCount" style="color: #0f172a;">0</strong>
           </div>
-          <div class="flex justify-between text-slate-600 text-sm">
-            <span class="font-bold text-slate-800">कुल खरीद भुगतान:</span>
-            <span id="billTotalPurchaseCost" class="font-extrabold text-blue-600 text-base">₹0.00</span>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px;">
+            <strong>कुल खरीद भुगतान:</strong>
+            <strong id="billTotalPurchaseCost" style="color: #2563eb;">₹0.00</strong>
           </div>
-          <div class="flex justify-between text-slate-600">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span>कुल संभावित बिक्री:</span>
-            <span id="billTotalSellingValue" class="font-bold text-slate-800">₹0.00</span>
+            <strong id="billTotalSellingValue" style="color: #0f172a;">₹0.00</strong>
           </div>
-          <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
-            <span class="font-bold text-emerald-700 text-sm">कुल अनुमानित शुद्ध मुनाफा:</span>
-            <span id="billTotalProfit" class="font-extrabold text-emerald-600 text-base">₹0.00 (<span id="billMarginPercent">0%</span>)</span>
+          <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; display: flex; justify-content: space-between; font-size: 15px;">
+            <strong style="color: #059669;">कुल अनुमानित शुद्ध मुनाफा:</strong>
+            <strong id="billTotalProfit" style="color: #059669;">₹0.00 (<span id="billMarginPercent">0%</span>)</strong>
           </div>
         </div>
       </div>
 
-      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end no-print">
-        <button onclick="closeBillBreakdownModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs sm:text-sm font-bold transition">
-          बंद करें
-        </button>
+      <div class="modal-footer no-print">
+        <button onclick="closeBillBreakdownModal()" class="btn btn-outline">बंद करें</button>
       </div>
     </div>
   </div>
 
   <!-- ==================== MODAL: HISTORY TRIP DETAIL ==================== -->
-  <div id="historyDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
-      <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+  <div id="historyDetailModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
         <div>
-          <h3 id="histDetailTitle" class="font-extrabold text-slate-900 text-sm sm:text-base">खरीदारी विवरण</h3>
-          <p id="histDetailSubtitle" class="text-xs text-slate-500"></p>
+          <h3 id="histDetailTitle" class="modal-title">खरीदारी विवरण</h3>
+          <p id="histDetailSubtitle" style="font-size: 11px; color: #64748b;"></p>
         </div>
-        <div class="flex items-center space-x-2">
-          <button onclick="reorderHistoryTrip()" class="btn-tactile px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>दोबारा लोड करें</span>
-          </button>
-          <button onclick="closeHistoryDetailModal()" class="text-slate-400 hover:text-slate-600 text-lg ml-1">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button onclick="reorderHistoryTrip()" class="btn btn-primary btn-sm">दोबारा लोड करें</button>
+          <button onclick="closeHistoryDetailModal()" class="modal-close-btn">✕</button>
         </div>
       </div>
-      <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
-        <div id="histDetailMetrics" class="grid grid-cols-3 gap-2.5 sm:gap-3 text-center"></div>
+      <div class="modal-body">
+        <div id="histDetailMetrics" class="grid-cols-3" style="text-align: center; margin-bottom: 16px;"></div>
 
-        <h4 class="font-extrabold text-xs uppercase text-slate-500 tracking-wider">लाया गया सामान सूची:</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-            <thead class="bg-slate-50 text-slate-600 font-extrabold border-b border-slate-200">
+        <h4 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 8px;">
+          लाया गया सामान सूची:
+        </h4>
+        <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <table class="dukan-table" style="font-size: 12px;">
+            <thead>
               <tr>
-                <th class="py-2.5 px-3">सामान का नाम</th>
-                <th class="py-2.5 px-3 text-center">मात्रा</th>
-                <th class="py-2.5 px-3 text-right">खरीद दर</th>
-                <th class="py-2.5 px-3 text-right">कुल खरीद</th>
-                <th class="py-2.5 px-3 text-right">बिक्री दर</th>
-                <th class="py-2.5 px-3 text-right">लाभ</th>
+                <th>सामान का नाम</th>
+                <th style="text-align: center;">मात्रा</th>
+                <th style="text-align: right;">खरीद दर</th>
+                <th style="text-align: right;">कुल खरीद</th>
+                <th style="text-align: right;">बिक्री दर</th>
+                <th style="text-align: right;">लाभ</th>
               </tr>
             </thead>
-            <tbody id="histDetailTableBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="histDetailTableBody"></tbody>
           </table>
         </div>
       </div>
-      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
-        <button onclick="deleteActiveHistoryTrip()" class="text-rose-600 hover:text-rose-800 text-xs font-bold flex items-center space-x-1">
-          <i class="fa-solid fa-trash-can"></i>
-          <span>यह रिकॉर्ड डिलीट करें</span>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button onclick="deleteActiveHistoryTrip()" class="btn" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+          🗑️ यह रिकॉर्ड डिलीट करें
         </button>
-        <button onclick="closeHistoryDetailModal()" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold">
-          बंद करें
-        </button>
+        <button onclick="closeHistoryDetailModal()" class="btn btn-outline">बंद करें</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
 
   <!-- Modular Scripts -->
   <script src="/js/api.js"></script>
