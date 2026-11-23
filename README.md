@@ -1,5 +1,8 @@
-# 🏪 दुकान सहायक (Dukan Assistant Pro)
-### भारतीय दुकानदारों के लिए स्मार्ट थोक खरीद, फुटकर बिक्री व मुनाफा प्रबंधक
+<div align="center">
+  <img src="https://raw.githubusercontent.com/AmanC52/Dukan-Shuchi/main/assets/app_icon.png" width="110" height="110" alt="दुकान सहायक Logo" style="border-radius: 22px; box-shadow: 0 8px 24px rgba(30,58,138,0.25);">
+  <h1>दुकान सहायक (Dukan Assistant Pro)</h1>
+  <p><b>भारतीय दुकानदारों के लिए स्मार्ट थोक खरीद, फुटकर बिक्री व मुनाफा प्रबंधक</b></p>
+</div>
 
 ---
 
@@ -11,7 +14,7 @@
 <div align="center">
   <br>
   <a href="https://github.com/AmanC52/Dukan-Shuchi/raw/main/apk/Dukan-Sahayak.apk">
-    <img src="https://img.shields.io/badge/📲_Direct_Download-Dukan--Sahayak.apk_(3.2_MB)-059669?style=for-the-badge&logo=android&logoColor=white" height="48" alt="Download Android APK">
+    <img src="https://img.shields.io/badge/📲_Direct_Download-Dukan--Sahayak.apk_(3.7_MB)-059669?style=for-the-badge&logo=android&logoColor=white" height="48" alt="Download Android APK">
   </a>
   <br><br>
   <h3>👉 <a href="https://github.com/AmanC52/Dukan-Shuchi/raw/main/apk/Dukan-Sahayak.apk">यहाँ क्लिक करके सीधे मोबाइल में APK डाउनलोड करें</a></h3>
