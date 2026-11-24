@@ -257,22 +257,22 @@
           <span class="metric-lbl">चयनित सामान</span>
           <span id="barSelectedCount" class="metric-val">0 सामान</span>
         </div>
-        <div class="metric-item" style="border-left: 1px solid #cbd5e1; padding-left: 14px;">
+        <div class="metric-item metric-border">
           <span class="metric-lbl">कुल खरीद लागत</span>
           <span id="barPurchaseCost" class="metric-val blue">₹0.00</span>
         </div>
-        <div class="metric-item" style="border-left: 1px solid #cbd5e1; padding-left: 14px;">
+        <div class="metric-item metric-border">
           <span class="metric-lbl" style="color: #059669;">अनुमानित मुनाफा</span>
           <span id="barProfit" class="metric-val green">₹0.00</span>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button onclick="openBillBreakdownModal()" class="btn btn-outline">
-          📄 बिल विवरण
+      <div class="bottom-actions-group">
+        <button onclick="openBillBreakdownModal()" class="btn btn-outline" title="चुने हुए सामान की पर्ची देखें">
+          📄 पर्ची / बिल देखें
         </button>
-        <button onclick="saveCurrentTrip()" id="saveTripBtn" class="btn btn-success">
-          💾 खरीदारी सुरक्षित करें (Save)
+        <button onclick="saveCurrentTrip()" id="saveTripBtn" class="btn btn-success" title="मंडी खरीदारी रिकॉर्ड सेव करें">
+          💾 खरीदारी सुरक्षित करें
         </button>
       </div>
     </div>
@@ -420,26 +420,28 @@
           </div>
         </div>
 
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;">
-          <thead>
-            <tr style="border-bottom: 1px solid #cbd5e1; color: #64748b; text-transform: uppercase;">
-              <th style="padding: 6px 0; text-align: left;">सामान</th>
-              <th style="padding: 6px 0; text-align: center;">मात्रा</th>
-              <th style="padding: 6px 0; text-align: right;">खरीद दर</th>
-              <th style="padding: 6px 0; text-align: right;">कुल लागत</th>
-              <th style="padding: 6px 0; text-align: right;">बिक्री मूल्य</th>
-              <th style="padding: 6px 0; text-align: right;">लाभ</th>
-            </tr>
-          </thead>
-          <tbody id="billModalTableBody">
-            <!-- Rendered via JS -->
-          </tbody>
-        </table>
+        <div class="bill-table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <table style="width: 100%; min-width: 440px; border-collapse: collapse; font-size: 12px;">
+            <thead>
+              <tr style="border-bottom: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; text-transform: uppercase;">
+                <th style="padding: 8px 10px; text-align: left;">सामान</th>
+                <th style="padding: 8px 6px; text-align: center;">मात्रा</th>
+                <th style="padding: 8px 6px; text-align: right;">खरीद दर</th>
+                <th style="padding: 8px 6px; text-align: right;">कुल लागत</th>
+                <th style="padding: 8px 6px; text-align: right;">बिक्री मूल्य</th>
+                <th style="padding: 8px 10px; text-align: right;">शुद्ध लाभ</th>
+              </tr>
+            </thead>
+            <tbody id="billModalTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 13px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span>कुल सामान प्रकार:</span>
-            <strong id="billTotalItemsCount" style="color: #0f172a;">0</strong>
+            <strong id="billTotalItemsCount" style="color: #0f172a;">0 प्रकार</strong>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px;">
             <strong>कुल खरीद भुगतान:</strong>
@@ -451,7 +453,10 @@
           </div>
           <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; display: flex; justify-content: space-between; font-size: 15px;">
             <strong style="color: #059669;">कुल अनुमानित शुद्ध मुनाफा:</strong>
-            <strong id="billTotalProfit" style="color: #059669;">₹0.00 (<span id="billMarginPercent">0%</span>)</strong>
+            <strong style="color: #059669;">
+              <span id="billTotalProfit">+₹0.00</span>
+              <span class="badge badge-green" style="margin-left: 6px;" id="billMarginPercent">0% मार्जिन</span>
+            </strong>
           </div>
         </div>
       </div>

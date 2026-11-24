@@ -14,3 +14,8 @@ const Store = {
     }
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.Store = Store;
+}
+

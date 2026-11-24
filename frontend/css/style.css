@@ -661,6 +661,10 @@ body {
   display: flex;
   flex-direction: column;
 }
+.metric-item.metric-border {
+  border-left: 1px solid #cbd5e1;
+  padding-left: 14px;
+}
 .metric-lbl {
   font-size: 10px;
   font-weight: 700;
@@ -673,6 +677,84 @@ body {
 }
 .metric-val.blue { color: var(--primary); }
 .metric-val.green { color: var(--success); }
+
+.bottom-actions-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  /* Prevent any item cards from being covered by sticky bottom bars */
+  #tab-planner {
+    padding-bottom: 210px !important;
+  }
+  #tab-inventory {
+    padding-bottom: 110px !important;
+  }
+  #tab-history, #tab-reports {
+    padding-bottom: 90px !important;
+  }
+  .mobile-cards-container {
+    padding-bottom: 24px;
+  }
+
+  .sticky-bottom-bar {
+    bottom: 56px;
+    padding: 8px 12px;
+  }
+
+  .bottom-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .bottom-metrics-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .metric-item {
+    align-items: center;
+    text-align: center;
+    flex: 1;
+  }
+
+  .metric-item.metric-border {
+    border-left: 1px solid var(--slate-200);
+    padding-left: 6px;
+  }
+
+  .metric-lbl {
+    font-size: 9px;
+  }
+
+  .metric-val {
+    font-size: 13px;
+  }
+
+  .bottom-actions-group {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .bottom-actions-group .btn {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
 
 /* 11. Mobile Bottom App Navigation Bar */
 .mobile-nav-bar {

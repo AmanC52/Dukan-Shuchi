@@ -268,12 +268,16 @@ const PlannerModule = {
 
   openBillModal() {
     const today = document.getElementById('tripDate')?.value || new Date().toISOString().split('T')[0];
-    const mandi = document.getElementById('tripTitle')?.value || 'सदर मंडी';
+    const mandi = document.getElementById('tripTitle')?.value || 'सदर मंडी खरीदारी';
 
-    document.getElementById('billSlipDate').innerText = today;
-    document.getElementById('billSlipTitle').innerText = mandi;
+    const slipDate = document.getElementById('billSlipDate');
+    const slipTitle = document.getElementById('billSlipTitle');
+    if (slipDate) slipDate.innerText = today;
+    if (slipTitle) slipTitle.innerText = mandi;
 
     const tbody = document.getElementById('billModalTableBody');
+    if (!tbody) return;
+
     let html = '';
     let itemsCount = 0;
     let totalPurchase = 0;
@@ -283,7 +287,7 @@ const PlannerModule = {
       const state = Store.plannerState[p.id];
       if (state && state.checked) {
         itemsCount++;
-        const qty = state.qty || 1;
+        const qty = parseFloat(state.qty) || 1;
         const subtotalP = p.purchase_price * qty;
         const subtotalS = p.selling_price * qty;
         const profit = subtotalS - subtotalP;
@@ -292,23 +296,45 @@ const PlannerModule = {
         totalSelling += subtotalS;
 
         html += `
-          <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 8px 0;">
-              <strong>${p.name}</strong>
-              <div style="font-size: 11px; color: #64748b;">${p.unit || 'पेटी'} (${p.sub_quantity || 1} ${p.sub_unit || 'पीस'})</div>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 10px 8px; text-align: left;">
+              <strong style="color: #0f172a; font-size: 13px;">${p.name}</strong>
+              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                ${p.unit || 'पेटी'} (${p.sub_quantity || 1} ${p.sub_unit || 'पीस'})
+              </div>
             </td>
-            <td style="text-align: center;">${qty}</td>
-            <td style="text-align: right;">₹${p.purchase_price.toFixed(2)}</td>
-            <td style="text-align: right; font-weight: 700; color: #2563eb;">₹${subtotalP.toFixed(2)}</td>
-            <td style="text-align: right;">₹${subtotalS.toFixed(2)}</td>
-            <td style="text-align: right; font-weight: 700; color: #059669;">+₹${profit.toFixed(2)}</td>
+            <td style="padding: 10px 8px; text-align: center; font-weight: 800; color: #0f172a;">
+              ${qty}
+            </td>
+            <td style="padding: 10px 8px; text-align: right; color: #64748b;">
+              ₹${p.purchase_price.toFixed(2)}
+            </td>
+            <td style="padding: 10px 8px; text-align: right; font-weight: 800; color: #2563eb;">
+              ₹${subtotalP.toFixed(2)}
+            </td>
+            <td style="padding: 10px 8px; text-align: right; color: #334155;">
+              ₹${subtotalS.toFixed(2)}
+            </td>
+            <td style="padding: 10px 8px; text-align: right; font-weight: 800; color: #059669;">
+              +₹${profit.toFixed(2)}
+            </td>
           </tr>
         `;
       }
     });
 
     if (itemsCount === 0) {
-      html = `<tr><td colspan="6" style="padding: 24px; text-align: center; color: #94a3b8;">कोई सामान चयनित नहीं है</td></tr>`;
+      html = `
+        <tr>
+          <td colspan="6" style="padding: 30px 12px; text-align: center; color: #64748b;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📋</div>
+            <strong style="font-size: 15px; color: #0f172a; display: block; margin-bottom: 4px;">कोई सामान चुना नहीं गया है</strong>
+            <span style="font-size: 12px; color: #94a3b8;">
+              कृपया पहले चेकलिस्ट में सामान के आगे दिए टिक (Checkbox) पर क्लिक करके सामान चुनें।
+            </span>
+          </td>
+        </tr>
+      `;
     }
 
     tbody.innerHTML = html;
@@ -316,13 +342,20 @@ const PlannerModule = {
     const totalProfit = totalSelling - totalPurchase;
     const marginPercent = totalSelling > 0 ? ((totalProfit / totalSelling) * 100).toFixed(1) : 0;
 
-    document.getElementById('billTotalItemsCount').innerText = `${itemsCount} प्रकार`;
-    document.getElementById('billTotalPurchaseCost').innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('billTotalSellingValue').innerText = `₹${totalSelling.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('billTotalProfit').innerText = `₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${marginPercent}%)`;
-    document.getElementById('billMarginPercent').innerText = `${marginPercent}%`;
+    const itemsCountEl = document.getElementById('billTotalItemsCount');
+    const pCostEl = document.getElementById('billTotalPurchaseCost');
+    const sValueEl = document.getElementById('billTotalSellingValue');
+    const profitEl = document.getElementById('billTotalProfit');
+    const marginEl = document.getElementById('billMarginPercent');
 
-    document.getElementById('billModal').classList.remove('hidden');
+    if (itemsCountEl) itemsCountEl.innerText = `${itemsCount} प्रकार का सामान`;
+    if (pCostEl) pCostEl.innerText = `₹${totalPurchase.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (sValueEl) sValueEl.innerText = `₹${totalSelling.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (profitEl) profitEl.innerText = `+₹${totalProfit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (marginEl) marginEl.innerText = `${marginPercent}% मार्जिन`;
+
+    const modal = document.getElementById('billModal');
+    if (modal) modal.classList.remove('hidden');
   },
 
   closeBillModal() {
@@ -369,3 +402,8 @@ const PlannerModule = {
     }
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.PlannerModule = PlannerModule;
+}
+
