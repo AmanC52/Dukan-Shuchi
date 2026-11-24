@@ -10,9 +10,9 @@ const App = {
   },
 
   registerPWA() {
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('sw.js')
           .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
           .catch(err => console.log('PWA ServiceWorker registration failed:', err));
       });

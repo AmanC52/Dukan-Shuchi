@@ -1,21 +1,26 @@
 // Service Worker for Dukan Sahayak PWA
-const CACHE_NAME = 'dukan-sahayak-v2';
+const CACHE_NAME = 'dukan-sahayak-v3';
 const ASSETS = [
   '/',
-  '/css/style.css',
-  '/js/api.js',
-  '/js/state.js',
-  '/js/planner.js',
-  '/js/inventory.js',
-  '/js/history.js',
-  '/js/reports.js',
-  '/js/main.js',
-  '/manifest.json'
+  'index.html',
+  'css/style.css',
+  'js/seed_data.js',
+  'js/api.js',
+  'js/state.js',
+  'js/planner.js',
+  'js/inventory.js',
+  'js/history.js',
+  'js/reports.js',
+  'js/main.js',
+  'manifest.json',
+  'assets/favicon.png',
+  'assets/app_icon_192.png',
+  'assets/app_icon.png'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch((err) => console.log('SW cache error:', err))
   );
   self.skipWaiting();
 });
@@ -32,7 +37,6 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Network first for API, cache first for static assets
   if (e.request.url.includes('/api/')) {
     e.respondWith(
       fetch(e.request).catch(() => caches.match(e.request))

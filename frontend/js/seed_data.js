@@ -589,3 +589,8 @@ const INITIAL_SEED_PRODUCTS = [
     "notes": "पैकिंग: 1 डब्बा (150 यूनिट) | स्रोत: बिल 3"
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.INITIAL_SEED_PRODUCTS = INITIAL_SEED_PRODUCTS;
+}
+

@@ -152,7 +152,7 @@ const InventoryModule = {
   },
 
   openEditModal(productId) {
-    const p = Store.products.find(item => item.id === productId);
+    const p = Store.products.find(item => Number(item.id) === Number(productId));
     if (!p) return;
 
     document.getElementById('editProductId').value = p.id;
