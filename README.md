@@ -23,7 +23,7 @@
 </div>
 
 ### 2. कंप्यूटर के लिए (Windows Desktop App)
-- कंप्यूटर में सीधे चलाने के लिए `dist/DukanSahayak/DukanSahayak.exe` या `Dukan_Sahayak.bat` पर डबल क्लिक करें।
+- कंप्यूटर में सीधे चलाने के लिए फोल्डर में मौजूद **`Dukan Sahayak.lnk`** (शॉर्टकट), **`Dukan_Sahayak.bat`** या **`dist/DukanSahayak/DukanSahayak.exe`** पर डबल क्लिक करें।
 
 ---
 
