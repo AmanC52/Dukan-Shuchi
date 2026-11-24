@@ -155,5 +155,62 @@ const HistoryModule = {
     } catch (err) {
       App.showToast('त्रुटि: ' + err.message, 'error');
     }
+  },
+
+  getActiveTripBillData() {
+    if (!Store.activeTrip) return null;
+    const t = Store.activeTrip;
+    const items = (t.items || []).map(it => ({
+      name: it.product_name,
+      unit: it.unit || 'पेटी',
+      sub_info: '',
+      quantity: it.quantity,
+      purchase_price: it.purchase_price,
+      selling_price: it.selling_price,
+      subtotal_purchase: it.subtotal_purchase || (it.purchase_price * it.quantity),
+      subtotal_selling: it.subtotal_selling || (it.selling_price * it.quantity),
+      profit: it.profit || ((it.selling_price - it.purchase_price) * it.quantity)
+    }));
+
+    return {
+      trip_date: t.trip_date,
+      title: t.title || 'मंडी खरीदारी',
+      items: items,
+      total_items: t.total_items || items.length,
+      total_purchase: t.total_purchase_cost,
+      total_selling: t.total_selling_value,
+      total_profit: t.total_profit,
+      margin_percent: t.margin_percent
+    };
+  },
+
+  printTrip() {
+    const data = this.getActiveTripBillData();
+    if (!data) return;
+    const html = PrintHelper.generateReceiptHtml(data);
+    PrintHelper.printHtml(html);
+  },
+
+  shareWhatsApp() {
+    const data = this.getActiveTripBillData();
+    if (!data) return;
+    PrintHelper.shareWhatsApp(data);
+  },
+
+  copyTripText() {
+    const data = this.getActiveTripBillData();
+    if (!data) return;
+    PrintHelper.copyText(data);
+  },
+
+  shareMobile() {
+    const data = this.getActiveTripBillData();
+    if (!data) return;
+    PrintHelper.shareMobile(data);
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.HistoryModule = HistoryModule;
+}
+

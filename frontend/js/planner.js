@@ -359,7 +359,93 @@ const PlannerModule = {
   },
 
   closeBillModal() {
-    document.getElementById('billModal').classList.add('hidden');
+    const modal = document.getElementById('billModal');
+    if (modal) modal.classList.add('hidden');
+  },
+
+  getSelectedItemsBillData() {
+    const today = document.getElementById('tripDate')?.value || new Date().toISOString().split('T')[0];
+    const mandi = document.getElementById('tripTitle')?.value || 'सदर मंडी खरीदारी';
+
+    const items = [];
+    let totalPurchase = 0;
+    let totalSelling = 0;
+
+    Store.products.forEach(p => {
+      const state = Store.plannerState[p.id];
+      if (state && state.checked) {
+        const qty = parseFloat(state.qty) || 1;
+        const subtotalP = p.purchase_price * qty;
+        const subtotalS = p.selling_price * qty;
+        const profit = subtotalS - subtotalP;
+
+        totalPurchase += subtotalP;
+        totalSelling += subtotalS;
+
+        items.push({
+          name: p.name,
+          unit: p.unit || 'पेटी',
+          sub_info: `${p.sub_quantity || 1} ${p.sub_unit || 'पीस'}`,
+          quantity: qty,
+          purchase_price: p.purchase_price,
+          selling_price: p.selling_price,
+          subtotal_purchase: subtotalP,
+          subtotal_selling: subtotalS,
+          profit: profit
+        });
+      }
+    });
+
+    const totalProfit = totalSelling - totalPurchase;
+    const margin = totalSelling > 0 ? parseFloat(((totalProfit / totalSelling) * 100).toFixed(1)) : 0;
+
+    return {
+      trip_date: today,
+      title: mandi,
+      items: items,
+      total_items: items.length,
+      total_purchase: totalPurchase,
+      total_selling: totalSelling,
+      total_profit: totalProfit,
+      margin_percent: margin
+    };
+  },
+
+  printBill() {
+    const data = this.getSelectedItemsBillData();
+    if (data.items.length === 0) {
+      App.showToast('कृपया पहले चेकलिस्ट में सामान चुनें', 'warning');
+      return;
+    }
+    const html = PrintHelper.generateReceiptHtml(data);
+    PrintHelper.printHtml(html);
+  },
+
+  shareWhatsApp() {
+    const data = this.getSelectedItemsBillData();
+    if (data.items.length === 0) {
+      App.showToast('कृपया पहले चेकलिस्ट में सामान चुनें', 'warning');
+      return;
+    }
+    PrintHelper.shareWhatsApp(data);
+  },
+
+  copyBillText() {
+    const data = this.getSelectedItemsBillData();
+    if (data.items.length === 0) {
+      App.showToast('कृपया पहले चेकलिस्ट में सामान चुनें', 'warning');
+      return;
+    }
+    PrintHelper.copyText(data);
+  },
+
+  shareMobile() {
+    const data = this.getSelectedItemsBillData();
+    if (data.items.length === 0) {
+      App.showToast('कृपया पहले चेकलिस्ट में सामान चुनें', 'warning');
+      return;
+    }
+    PrintHelper.shareMobile(data);
   },
 
   async saveTrip() {

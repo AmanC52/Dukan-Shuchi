@@ -1,5 +1,5 @@
 // Service Worker for Dukan Sahayak PWA
-const CACHE_NAME = 'dukan-sahayak-v3';
+const CACHE_NAME = 'dukan-sahayak-v4';
 const ASSETS = [
   '/',
   'index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   'js/seed_data.js',
   'js/api.js',
   'js/state.js',
+  'js/print_helper.js',
   'js/planner.js',
   'js/inventory.js',
   'js/history.js',

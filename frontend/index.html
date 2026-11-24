@@ -403,11 +403,27 @@
   <div id="billModal" class="modal-backdrop hidden">
     <div class="modal-dialog">
       <div class="modal-header no-print">
-        <h3 class="modal-title">खरीदारी बिल व मुनाफा विवरण</h3>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button onclick="window.print()" class="btn btn-primary btn-sm">🖨️ प्रिंट करें</button>
-          <button onclick="closeBillBreakdownModal()" class="modal-close-btn">✕</button>
+        <div>
+          <h3 class="modal-title">खरीदारी बिल व मुनाफा विवरण</h3>
+          <p style="font-size: 11px; color: #64748b; margin-top: 2px;">प्रिंट / PDF बनाएं या WhatsApp पर शेयर करें</p>
         </div>
+        <button onclick="closeBillBreakdownModal()" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Quick Action Toolbar for Print & Mobile Share -->
+      <div class="no-print" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; background: #f0f7ff; border-bottom: 1px solid #bfdbfe; align-items: center;">
+        <button onclick="PlannerModule.printBill()" class="btn btn-primary btn-sm" style="flex: 1; min-width: 110px;">
+          🖨️ प्रिंट / PDF
+        </button>
+        <button onclick="PlannerModule.shareWhatsApp()" class="btn btn-sm" style="flex: 1; min-width: 120px; background: #25d366; color: white; border: none; font-weight: 700;">
+          📲 WhatsApp
+        </button>
+        <button onclick="PlannerModule.copyBillText()" class="btn btn-outline btn-sm" style="flex: 1; min-width: 85px;">
+          📋 कॉपी
+        </button>
+        <button onclick="PlannerModule.shareMobile()" class="btn btn-outline btn-sm" style="flex: 1; min-width: 85px;">
+          📤 शेयर
+        </button>
       </div>
 
       <div id="printableBill" class="modal-body">
@@ -470,15 +486,28 @@
   <!-- ==================== MODAL: HISTORY TRIP DETAIL ==================== -->
   <div id="historyDetailModal" class="modal-backdrop hidden">
     <div class="modal-dialog">
-      <div class="modal-header">
+      <div class="modal-header no-print">
         <div>
           <h3 id="histDetailTitle" class="modal-title">खरीदारी विवरण</h3>
           <p id="histDetailSubtitle" style="font-size: 11px; color: #64748b;"></p>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button onclick="reorderHistoryTrip()" class="btn btn-primary btn-sm">दोबारा लोड करें</button>
-          <button onclick="closeHistoryDetailModal()" class="modal-close-btn">✕</button>
-        </div>
+        <button onclick="closeHistoryDetailModal()" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Quick Action Toolbar for History Detail -->
+      <div class="no-print" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; background: #f0f7ff; border-bottom: 1px solid #bfdbfe; align-items: center;">
+        <button onclick="HistoryModule.printTrip()" class="btn btn-primary btn-sm" style="flex: 1; min-width: 110px;">
+          🖨️ प्रिंट / PDF
+        </button>
+        <button onclick="HistoryModule.shareWhatsApp()" class="btn btn-sm" style="flex: 1; min-width: 120px; background: #25d366; color: white; border: none; font-weight: 700;">
+          📲 WhatsApp
+        </button>
+        <button onclick="HistoryModule.copyTripText()" class="btn btn-outline btn-sm" style="flex: 1; min-width: 85px;">
+          📋 कॉपी
+        </button>
+        <button onclick="reorderHistoryTrip()" class="btn btn-outline btn-sm" style="flex: 1; min-width: 100px;">
+          🔄 दोबारा लोड
+        </button>
       </div>
       <div class="modal-body">
         <div id="histDetailMetrics" class="grid-cols-3" style="text-align: center; margin-bottom: 16px;"></div>
@@ -518,6 +547,7 @@
   <script src="js/seed_data.js"></script>
   <script src="js/api.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/print_helper.js"></script>
   <script src="js/planner.js"></script>
   <script src="js/inventory.js"></script>
   <script src="js/history.js"></script>
